@@ -5,7 +5,13 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "sonner";
 import appCss from "~/styles/app.css?url";
+import { AuthProvider } from "~/context/auth-context";
+import { createQueryClient } from "~/lib/query-client";
+
+const queryClient = createQueryClient();
 
 export const Route = createRootRoute({
   head: () => ({
@@ -22,19 +28,24 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <RootDocument>
-      <Outlet />
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <Outlet />
+        </AuthProvider>
+      </QueryClientProvider>
     </RootDocument>
   );
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr">
+    <html lang="fr" className="dark">
       <head>
         <HeadContent />
       </head>
       <body>
         {children}
+        <Toaster theme="dark" richColors position="top-right" />
         <Scripts />
         {process.env.NODE_ENV === "development" && (
           <TanStackRouterDevtools position="bottom-right" />

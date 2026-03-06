@@ -19,7 +19,14 @@ export default defineConfig({
     () => import('#start/routes'),
     () => import('#start/kernel'),
     () => import('#start/infra'),
-    () => import('#start/ws'),
+    {
+      file: () => import('#start/ws'),
+      environment: ['web'],
+    },
+    {
+      file: () => import('#start/workers'),
+      environment: ['web'],
+    },
   ],
 
   metaFiles: [

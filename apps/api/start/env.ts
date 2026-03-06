@@ -13,6 +13,7 @@ export default await Env.create(new URL('../', import.meta.url), {
   LOG_LEVEL: Env.schema.string.optional(),
 
   APP_KEY: Env.schema.string(),
+  JWT_SECRET: Env.schema.string(),
 
   DATABASE_URL: Env.schema.string(),
   REDIS_URL: Env.schema.string(),

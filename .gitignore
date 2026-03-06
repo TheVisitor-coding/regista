@@ -46,3 +46,8 @@ docker/data/
 .pnpm-store/**
 **/.pnpm-store/
 **/.pnpm-store/**
+
+# Claude
+.agent/
+.agents/
+.claude/skills/
