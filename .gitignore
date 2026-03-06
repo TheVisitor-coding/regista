@@ -3,14 +3,18 @@ node_modules/
 
 # Build outputs
 dist/
+build/
 .output/
 .vinxi/
 .turbo/
+.tanstack/
 
 # Environment
 .env
 .env.local
+.env.*
 .env.*.local
+!.env.example
 
 # IDE
 .vscode/
@@ -36,3 +40,9 @@ docker/data/
 
 # Misc
 *.tsbuildinfo
+
+# Pnpm
+.pnpm-store/
+.pnpm-store/**
+**/.pnpm-store/
+**/.pnpm-store/**

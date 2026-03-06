@@ -3,5 +3,5 @@
  * Database client, schema, and utilities.
  */
 
-export { db } from "./client";
-export * from "./schema";
+export { db, sqlClient } from "./client.js";
+export * from "./schema/index.js";

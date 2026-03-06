@@ -7,7 +7,7 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".output/**", ".vinxi/**"]
+      "outputs": ["dist/**", "build/**", ".output/**", ".vinxi/**"]
     },
     "lint": {
       "dependsOn": ["^build"]
@@ -27,6 +27,9 @@
     "db:studio": {
       "cache": false,
       "persistent": true
+    },
+    "db:seed": {
+      "cache": false
     },
     "clean": {
       "cache": false

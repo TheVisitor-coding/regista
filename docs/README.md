@@ -21,7 +21,7 @@ Chaque joueur gère son propre club de football : effectif, tactique, entraînem
 | Couche | Technologie |
 |---|---|
 | Frontend | TanStack Start + React 19 + Tailwind CSS 4 + shadcn/ui |
-| Backend | NestJS + TypeScript |
+| Backend | AdonisJS 6 + TypeScript |
 | Database | PostgreSQL 17 + Drizzle ORM |
 | Real-time | Socket.io |
 | Cache / Queue | Redis 7 + BullMQ |
@@ -36,7 +36,7 @@ Chaque joueur gère son propre club de football : effectif, tactique, entraînem
 regista/
 ├── apps/
 │   ├── web/              # Frontend (TanStack Start + React)
-│   └── api/              # Backend (NestJS)
+│   └── api/              # Backend (AdonisJS)
 ├── packages/
 │   ├── shared/           # Types, constantes, utils partagés
 │   └── db/               # Drizzle schema + migrations + client
@@ -44,7 +44,7 @@ regista/
 │   ├── README.md         # Ce fichier
 │   └── specs/            # Spécifications fonctionnelles par feature
 ├── docker/               # Dockerfiles
-├── docker-compose.yml    # PostgreSQL + Redis
+├── docker-compose.yml    # Stack Docker complète (web + api + postgres + redis)
 ├── turbo.json            # Config Turborepo
 └── pnpm-workspace.yaml   # Config workspaces pnpm
 ```
@@ -92,7 +92,7 @@ Chaque fichier de spec contient :
 
 - **TypeScript strict** partout (frontend + backend)
 - **Type-safety end-to-end** : Drizzle schema → API types → Frontend types via `@regista/shared`
-- **Modules NestJS** : 1 module par domaine fonctionnel
+- **AdonisJS domains** : 1 dossier domaine dans `app/` (ex: `app/match/`, `app/club/`)
 - **File-based routing** TanStack Router
 - **Tests** : Vitest pour les tests unitaires/intégration
 - **Commits** : Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`)
@@ -120,8 +120,8 @@ git clone <repo-url>
 cd regista
 pnpm install
 
-# Lancer les services (PostgreSQL + Redis)
-docker compose up -d
+# Lancer l'infra (PostgreSQL + Redis)
+pnpm docker:infra:up
 
 # Copier les variables d'environnement
 cp .env.example .env
@@ -129,3 +129,9 @@ cp .env.example .env
 # Lancer le dev
 pnpm dev
 ```
+
+## Démarrage Docker: fonctionnement
+
+- `docker-compose.yml` contient la stack de base: `postgres`, `redis`, `api`, `web`
+- `docker-compose.dev.yml` est un override pour `api` et `web` (mode dev/hot-reload)
+- Le mode dev Docker doit être lancé avec les deux fichiers: `pnpm docker:dev:up`
