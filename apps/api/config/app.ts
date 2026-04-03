@@ -8,5 +8,20 @@ export default {
     generateRequestId: true,
     allowMethodSpoofing: false,
     useAsyncLocalStorage: false,
+    qs: {
+      parse: {
+        depth: 5,
+        parameterLimit: 1000,
+        allowSparse: false,
+        arrayLimit: 20,
+        comma: true,
+      },
+      stringify: {
+        encode: true,
+        encodeValuesOnly: false,
+        arrayFormat: 'indices' as const,
+        skipNulls: false,
+      },
+    },
   },
 }

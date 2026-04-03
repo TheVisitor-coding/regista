@@ -19,4 +19,5 @@ export default await Env.create(new URL('../', import.meta.url), {
   REDIS_URL: Env.schema.string(),
 
   CORS_ORIGIN: Env.schema.string.optional(),
+  EMAIL_VERIFICATION_REQUIRED: Env.schema.boolean.optional(),
 })

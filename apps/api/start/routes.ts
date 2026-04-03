@@ -11,6 +11,21 @@ import { rateLimit } from '../app/middleware/rate_limit_middleware.js'
 const HealthController = () => import('#controllers/health_controller')
 const AuthController = () => import('../app/auth/auth_controller.js')
 const UserController = () => import('../app/users/user_controller.js')
+const ClubController = () => import('../app/clubs/club_controller.js')
+const DashboardController = () => import('../app/dashboard/dashboard_controller.js')
+const NotificationController = () => import('../app/notifications/notification_controller.js')
+const FinanceController = () => import('../app/finances/finance_controller.js')
+const SquadController = () => import('../app/squad/squad_controller.js')
+const CompetitionController = () => import('../app/competition/competition_controller.js')
+const MatchController = () => import('../app/competition/match_controller.js')
+const SettingsController = () => import('../app/settings/settings_controller.js')
+const MatchDetailController = () => import('../app/match/match_detail_controller.js')
+const TrainingController = () => import('../app/training/training_controller.js')
+const MarketController = () => import('../app/transfers/market_controller.js')
+const OfferController = () => import('../app/transfers/offer_controller.js')
+const TacticsController = () => import('../app/tactics/tactics_controller.js')
+const ModerationController = () => import('../app/moderation/moderation_controller.js')
+const OnboardingController = () => import('../app/onboarding/onboarding_controller.js')
 
 const registerRL = rateLimit({ maxAttempts: 3, windowSeconds: 3600, keyPrefix: 'register' })
 const loginRL = rateLimit({ maxAttempts: 5, windowSeconds: 900, keyPrefix: 'login' })
@@ -48,3 +63,108 @@ router.group(() => {
   router.get('/me/sessions', [UserController, 'getSessions'])
   router.delete('/me/sessions', [UserController, 'revokeSessions'])
 }).prefix('/users').use(authMiddleware)
+
+router.get('/dashboard', [DashboardController, 'show']).use(authMiddleware)
+
+// Club routes
+router.group(() => {
+  router.post('/', [ClubController, 'create'])
+  router.get('/mine', [ClubController, 'mine'])
+  router.patch('/mine', [ClubController, 'updateMine'])
+  router.get('/check-name', [ClubController, 'checkName'])
+}).prefix('/clubs').use(authMiddleware)
+
+router.get('/clubs/:id', [ClubController, 'show'])
+
+// Notification routes (protected)
+router.group(() => {
+  router.get('/', [NotificationController, 'index'])
+  router.patch('/:id/read', [NotificationController, 'markRead'])
+  router.patch('/read-all', [NotificationController, 'markAllRead'])
+  router.get('/unread-count', [NotificationController, 'unreadCount'])
+}).prefix('/notifications').use(authMiddleware)
+
+// Finance routes (protected)
+router.group(() => {
+  router.get('/', [FinanceController, 'summary'])
+  router.get('/transactions', [FinanceController, 'transactions'])
+  router.get('/salary-breakdown', [FinanceController, 'salaryBreakdown'])
+}).prefix('/finances').use(authMiddleware)
+
+// Squad routes (protected)
+router.group(() => {
+  router.get('/', [SquadController, 'index'])
+  router.get('/:playerId', [SquadController, 'show'])
+}).prefix('/squad').use(authMiddleware)
+
+// Competition routes (protected)
+router.group(() => {
+  router.get('/', [CompetitionController, 'info'])
+  router.get('/standings', [CompetitionController, 'standings'])
+  router.get('/matchday/:number', [CompetitionController, 'matchday'])
+}).prefix('/competition').use(authMiddleware)
+
+// Match routes (protected)
+router.group(() => {
+  router.get('/', [MatchController, 'index'])
+  router.get('/:matchId', [MatchController, 'show'])
+  router.get('/:matchId/events', [MatchDetailController, 'events'])
+  router.get('/:matchId/lineups', [MatchDetailController, 'lineups'])
+  router.get('/:matchId/stats', [MatchDetailController, 'stats'])
+  router.post('/:matchId/tactics', [MatchDetailController, 'updateTactics'])
+}).prefix('/matches').use(authMiddleware)
+
+// Settings routes (protected)
+router.group(() => {
+  router.get('/notifications', [SettingsController, 'getNotificationPreferences'])
+  router.put('/notifications', [SettingsController, 'updateNotificationPreferences'])
+}).prefix('/settings').use(authMiddleware)
+
+// Training routes (protected)
+router.group(() => {
+  router.get('/', [TrainingController, 'show'])
+  router.put('/', [TrainingController, 'update'])
+}).prefix('/training').use(authMiddleware)
+
+// Market routes (protected)
+router.group(() => {
+  router.get('/', [MarketController, 'index'])
+  router.get('/my-listings', [MarketController, 'myListings'])
+  router.get('/free-agents', [MarketController, 'freeAgentsList'])
+  router.get('/:listingId', [MarketController, 'show'])
+  router.post('/buy/:listingId', [MarketController, 'buy'])
+  router.post('/sell', [MarketController, 'sell'])
+  router.delete('/listings/:listingId', [MarketController, 'withdraw'])
+  router.post('/free-agents/:id/sign', [MarketController, 'signFreeAgent'])
+}).prefix('/market').use(authMiddleware)
+
+// Offer routes (protected)
+router.group(() => {
+  router.post('/', [OfferController, 'create'])
+  router.get('/sent', [OfferController, 'sent'])
+  router.get('/received', [OfferController, 'received'])
+  router.post('/:id/accept', [OfferController, 'accept'])
+  router.post('/:id/reject', [OfferController, 'reject'])
+  router.post('/:id/counter', [OfferController, 'counter'])
+  router.delete('/:id', [OfferController, 'cancel'])
+}).prefix('/offers').use(authMiddleware)
+
+// Release player (protected)
+router.post('/squad/:playerId/release', [MarketController, 'releasePlayer']).use(authMiddleware)
+
+// Tactics routes (protected)
+router.group(() => {
+  router.get('/', [TacticsController, 'show'])
+  router.put('/', [TacticsController, 'update'])
+}).prefix('/tactics').use(authMiddleware)
+
+// Moderation routes
+router.post('/names/validate', [ModerationController, 'validateName'])
+router.post('/reports', [ModerationController, 'createReport']).use(authMiddleware)
+
+// Onboarding routes (protected)
+router.group(() => {
+  router.get('/status', [OnboardingController, 'status'])
+  router.post('/missions/:missionKey/complete', [OnboardingController, 'completeMission'])
+  router.post('/missions/:missionKey/claim', [OnboardingController, 'claimReward'])
+}).prefix('/onboarding').use(authMiddleware)

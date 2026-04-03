@@ -1,73 +1,28 @@
-import { Link, useNavigate } from '@tanstack/react-router'
-import { LogOut, Settings, User } from 'lucide-react'
-import { useState, useRef, useEffect } from 'react'
-import { useAuth } from '~/hooks/use-auth'
-import { Button } from '~/components/ui/button'
+import { AppHeader } from './app-header'
+import { Sidebar } from './sidebar'
+import { MobileBottomBar } from './mobile-bottom-bar'
 
-export function AppLayout({ children }: { children: React.ReactNode }) {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
-  const [menuOpen, setMenuOpen] = useState(false)
-  const menuRef = useRef<HTMLDivElement>(null)
+interface AppLayoutProps {
+  children: React.ReactNode
+  unreadCount?: number
+}
 
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
-  }, [])
-
-  const handleLogout = async () => {
-    await logout()
-    navigate({ to: '/' })
-  }
-
+export function AppLayout({ children, unreadCount }: AppLayoutProps) {
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-          <Link to="/dashboard" className="text-xl font-bold text-primary">
-            Regista
-          </Link>
+    <div className="flex min-h-screen flex-col bg-background">
+      <AppHeader unreadCount={unreadCount} />
 
-          <div className="relative" ref={menuRef}>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="flex items-center gap-2"
-            >
-              <User className="h-4 w-4" />
-              {user?.username}
-            </Button>
+      <div className="flex flex-1">
+        <Sidebar />
 
-            {menuOpen && (
-              <div className="absolute right-0 top-full mt-1 w-48 rounded-md border border-border bg-card p-1 shadow-lg">
-                <Link
-                  to="/settings"
-                  className="flex items-center gap-2 rounded px-3 py-2 text-sm hover:bg-accent"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  <Settings className="h-4 w-4" />
-                  Settings
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="flex w-full items-center gap-2 rounded px-3 py-2 text-sm hover:bg-accent text-destructive-foreground"
-                >
-                  <LogOut className="h-4 w-4" />
-                  Log out
-                </button>
-              </div>
-            )}
+        <main className="flex-1 overflow-y-auto pb-16 lg:pb-0">
+          <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
+            {children}
           </div>
-        </div>
-      </header>
+        </main>
+      </div>
 
-      <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
+      <MobileBottomBar />
     </div>
   )
 }

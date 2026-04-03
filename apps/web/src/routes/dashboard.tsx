@@ -1,14 +1,33 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { useAuth } from '~/hooks/use-auth'
 import { AppLayout } from '~/components/layout/app-layout'
+import { DashboardLoading } from '~/components/dashboard/dashboard-loading'
+import { DashboardErrorState } from '~/components/dashboard/dashboard-error-state'
+import { DashboardContent } from '~/components/dashboard/dashboard-content'
+import { fetchDashboard } from '~/lib/dashboard'
+import { ApiRequestError } from '~/lib/api-client'
 
 export const Route = createFileRoute('/dashboard')({
   component: DashboardPage,
 })
 
 function DashboardPage() {
-  const { user, isAuthenticated, isLoading } = useAuth()
+  const { isAuthenticated, isLoading } = useAuth()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      navigate({ to: '/login' })
+    }
+  }, [isAuthenticated, isLoading, navigate])
+
+  const { data, isPending, isError, error } = useQuery({
+    queryKey: ['dashboard'],
+    queryFn: fetchDashboard,
+    enabled: isAuthenticated && !isLoading,
+  })
 
   if (isLoading) {
     return (
@@ -19,20 +38,37 @@ function DashboardPage() {
   }
 
   if (!isAuthenticated) {
-    navigate({ to: '/login' })
     return null
   }
 
+  if (isPending) {
+    return (
+      <AppLayout>
+        <DashboardLoading />
+      </AppLayout>
+    )
+  }
+
+  if (isError) {
+    const isNoClub = error instanceof ApiRequestError && error.status === 404
+
+    if (isNoClub) {
+      navigate({ to: '/onboarding' })
+      return null
+    }
+
+    return (
+      <AppLayout>
+        <DashboardErrorState isNoClub={false} />
+      </AppLayout>
+    )
+  }
+
+  if (!data) return null
+
   return (
-    <AppLayout>
-      <div className="space-y-6">
-        <h1 className="text-3xl font-bold">
-          Welcome, <span className="text-primary">{user?.username}</span>!
-        </h1>
-        <p className="text-muted-foreground">
-          Your club awaits you soon.
-        </p>
-      </div>
+    <AppLayout unreadCount={data.unreadNotifications}>
+      <DashboardContent data={data} />
     </AppLayout>
   )
 }

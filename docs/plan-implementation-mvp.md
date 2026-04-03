@@ -4,6 +4,39 @@
 > **Périmètre** : SPEC-01 à SPEC-13 (Lot 1 MVP)
 > **Estimation** : ~42 tables, ~128 endpoints REST, ~11 événements Socket.io, ~37 jobs BullMQ
 
+## Avancement Implémentation (réel)
+
+> **Mise à jour** : 2026-03-06
+
+- `SPEC-01 Auth` : implémentée et fonctionnelle (register/login/refresh/profil/sessions)
+- `Step 1 (Phase 2)` : fondations Club backend implémentées
+  - DB : `clubs`, `club_staff`, `notifications`, `financial_transactions`
+  - API : `POST /clubs`, `GET /clubs/mine`, `PATCH /clubs/mine`, `GET /clubs/:id`
+  - Migration : `packages/db/drizzle/0001_material_malice.sql`
+- `Step 2 (Phase 2)` : dashboard minimal connecté implémenté
+  - API : `GET /dashboard` (agrégation minimale réelle + placeholders des modules non encore implémentés)
+  - Frontend : page `/dashboard` branchée via TanStack Query avec états `loading / error / empty-data`
+
+### Note de validation technique
+
+- Le runner `node ace test` est actuellement instable dans cet environnement (boot bloqué), donc la validation de Step 1 et Step 2 a été faite en runtime via appels HTTP réels + contrôles de typage.
+
+### Correctifs post-Step 2 (2026-03-06)
+
+- Persistance d'authentification frontend renforcée :
+  - token d'accès persisté côté client (`localStorage`) avec hydratation au reload
+  - utilisateur authentifié persisté côté client et resynchronisé via `GET /users/me`
+  - fallback refresh cookie conservé (`POST /auth/refresh`)
+- Stabilisation du dashboard :
+  - suppression des redirections impératives pendant le rendu React (navigation déplacée dans `useEffect`)
+  - traitement explicite des états `loading / error / no-club`
+- Refactor architecture frontend (atomic/component-first) :
+  - route `/dashboard` réduite au rôle d'orchestrateur
+  - extraction de composants dédiés dans `apps/web/src/components/dashboard/`
+- Déblocage auth sans service email actif :
+  - vérification email rendue configurable via `EMAIL_VERIFICATION_REQUIRED`
+  - en dev/test, les nouveaux comptes peuvent se connecter immédiatement (pas de blocage sur `/verify-email`)
+
 ---
 
 ## Graphe de dépendances des specs

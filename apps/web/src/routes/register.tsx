@@ -87,11 +87,15 @@ function RegisterPage() {
 
     setIsLoading(true)
     try {
-      await register(result.data)
-      navigate({ to: '/verify-email', search: { email: form.email, token: undefined } })
+      const res = await register(result.data)
+      if (res.needsVerification) {
+        navigate({ to: '/verify-email', search: { email: form.email, token: undefined } })
+      } else {
+        navigate({ to: '/dashboard' })
+      }
     } catch (err) {
       if (err instanceof ApiRequestError) {
-        if (err.status === 409 && err.body.errors) {
+        if ((err.status === 409 || err.status === 422) && err.body.errors) {
           const fieldErrors: Record<string, string> = {}
           err.body.errors.forEach((e) => {
             fieldErrors[e.field] = e.message

@@ -1,12 +1,33 @@
 import type { ApiError } from '@regista/shared'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const ACCESS_TOKEN_STORAGE_KEY = 'regista:auth:access-token'
 
-let accessToken: string | null = null
+function isBrowser() {
+  return typeof window !== 'undefined'
+}
+
+function readStoredAccessToken() {
+  if (!isBrowser()) return null
+  return window.localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY)
+}
+
+function writeStoredAccessToken(token: string | null) {
+  if (!isBrowser()) return
+
+  if (token) {
+    window.localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, token)
+  } else {
+    window.localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY)
+  }
+}
+
+let accessToken: string | null = readStoredAccessToken()
 let refreshPromise: Promise<string | null> | null = null
 
 export function setAccessToken(token: string | null) {
   accessToken = token
+  writeStoredAccessToken(token)
 }
 
 export function getAccessToken() {

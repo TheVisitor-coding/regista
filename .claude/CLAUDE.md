@@ -9,8 +9,10 @@
 - **Vault miroir** : ~/Personal_Vault/02 - Projects/regista/Session-Logs/
 
 ## État actuel
-- **Phase** : Specs MVP complètes (SPEC-01 à SPEC-14) — Implémentation non démarrée
+- **Phase** : MVP Gameplay implémenté (Phases 2-11) — En test local
 - **Branche principale** : main
+- **Implémenté** : Auth, Club+Squad, Dashboard, Notifications, Finances, Competition (leagues/divisions/standings/calendar), AI Clubs (59/league), Match Engine (simulation minute par minute), Game Loop (post-match pipeline, season lifecycle), Training, Progression, Transfers, Tactics, Stats
+- **Non implémenté** : Modération (SPEC-13), Polish (SPEC-14), Seed data, Tests E2E
 
 ## Décisions techniques
 <!-- /mem ajoute ici — chaque entrée préfixée par [YYYY-MM-DD] -->
@@ -27,13 +29,23 @@
 - [2026-03-06] AdonisJS imports : subpath imports Node.js avec préfixe `#` (#controllers/*, #services/*, etc.) — pas d'alias `~/` côté API
 - [2026-03-06] AdonisJS dev : `node ace serve --hmr` via hot-hook + @swc/core (HMR natif)
 - [2026-03-06] Docker : 3 modes — `docker:infra:up` (postgres+redis seuls), `docker:up` (prod build), `docker:dev:up` (dev mode avec volumes nommés, hot-reload)
+- [2026-04-03] Match engine MVP : 1 seconde réelle par minute de jeu (constante SECONDS_PER_SIMULATED_MINUTE). Configurable pour passer à 60s en production.
+- [2026-04-03] Clubs IA : générés synchroniquement à la création du club humain. 59 clubs par league (3 divisions × ~20 clubs). Overall calibré par division (Div1: 70-80, Div2: 60-70, Div3: 50-65).
+- [2026-04-03] Tactics stockées en Redis (pas en DB) pour le MVP — clé `tactics:{clubId}`.
+- [2026-04-03] Post-match pipeline : 10 étapes séquentielles dans match_worker.ts (stats, standings, fatigue, injuries, suspensions, recovery, progression, training, finances, notifications + matchday advancement).
+- [2026-04-03] BullMQ workers : email, match (scheduler cron 5min + pre-match/simulate/post-process), transfer (AI market refresh 4h UTC, expire offers hourly, expire free agents daily), finance (salary weekly lundi 00:00 UTC).
 - [2026-03-03] Modération : aucun blocage automatique de compte — toutes les alertes remontent à un admin humain (évite faux positifs, scoring ML = post-MVP)
 - [2026-03-03] Modération : validation noms = unicité exacte case-insensitive + blacklist Redis (~500 termes seedés). Pas de Levenshtein au MVP.
 - [2026-03-03] Cosmétiques (Lot 2) : table `premium_transactions` créée mais vide — paiement réel (Stripe) est Lot 3. Uniquement G$ au lancement.
 
 ## Bugs connus / Points d'attention
 <!-- /mem ajoute ici -->
-- [2026-03-03] `packages/shared/src/constants.ts` : vérifier que SECONDS_PER_SIMULATED_MINUTE=60, TACTICAL_CHANGE_COOLDOWN_MINUTES=5, MATCH_FREQUENCY_DAYS=3
+- [2026-04-03] AdonisJS config/app.ts : la propriété `qs` (query string parser) est requise dans `http` pour @adonisjs/http-server@7.8.0
+- [2026-04-03] .env monorepo : AdonisJS lit .env dans apps/api/ (symlink vers racine), le web a son propre .env avec VITE_* uniquement
+- [2026-04-03] vine.literal(true) au lieu de vine.accepted() pour valider les booléens JSON (pas les strings HTML form)
+- [2026-04-03] userId nullable sur la table clubs (nécessaire pour les clubs IA)
+- [2026-04-03] Création de league (~59 clubs + 1140 matchs) = ~30-60s — pas de loading indicator adapté sur le frontend onboarding
+- [2026-04-03] drizzle.config.ts utilise dotenv pour charger DATABASE_URL depuis le .env racine (devDependency dans packages/db)
 
 ## Conventions de code
 - TypeScript strict everywhere
@@ -49,3 +61,5 @@
 <!-- /mem ajoute ici — archivage auto après 30 jours -->
 - [2026-03-03] Session #1 : Setup projet + rédaction SPEC-01 à SPEC-14 (corpus complet)
 - [2026-03-06] Session #2 : Mise à jour stack technique + config Docker (Node 22, Japa, docker-compose.dev.yml, scripts docker:*)
+- [2026-03-06] Session #3 : Implémentation SPEC-01 Auth (backend + frontend, ~30 fichiers)
+- [2026-04-03] Session #4 : Implémentation Phases 2-11 (~140 fichiers, 8 migrations). MVP gameplay complet. Fix bugs testabilité (auth, env, CORS, qs config).

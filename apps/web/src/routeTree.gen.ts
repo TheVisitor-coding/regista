@@ -10,17 +10,55 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
+import { Route as TransfersRouteImport } from './routes/transfers'
+import { Route as TrainingRouteImport } from './routes/training'
+import { Route as TacticsRouteImport } from './routes/tactics'
+import { Route as StatsRouteImport } from './routes/stats'
+import { Route as SquadRouteImport } from './routes/squad'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as NotificationsRouteImport } from './routes/notifications'
+import { Route as MatchesRouteImport } from './routes/matches'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as FinancesRouteImport } from './routes/finances'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as CompetitionRouteImport } from './routes/competition'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SquadPlayerIdRouteImport } from './routes/squad.$playerId'
+import { Route as MatchesMatchIdRouteImport } from './routes/matches.$matchId'
+import { Route as CompetitionMatchdayNumberRouteImport } from './routes/competition.matchday.$number'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
   path: '/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TransfersRoute = TransfersRouteImport.update({
+  id: '/transfers',
+  path: '/transfers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrainingRoute = TrainingRouteImport.update({
+  id: '/training',
+  path: '/training',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TacticsRoute = TacticsRouteImport.update({
+  id: '/tactics',
+  path: '/tactics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StatsRoute = StatsRouteImport.update({
+  id: '/stats',
+  path: '/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SquadRoute = SquadRouteImport.update({
+  id: '/squad',
+  path: '/squad',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -38,6 +76,21 @@ const RegisterRoute = RegisterRouteImport.update({
   path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MatchesRoute = MatchesRouteImport.update({
+  id: '/matches',
+  path: '/matches',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -48,9 +101,19 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FinancesRoute = FinancesRouteImport.update({
+  id: '/finances',
+  path: '/finances',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompetitionRoute = CompetitionRouteImport.update({
+  id: '/competition',
+  path: '/competition',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -58,79 +121,183 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SquadPlayerIdRoute = SquadPlayerIdRouteImport.update({
+  id: '/$playerId',
+  path: '/$playerId',
+  getParentRoute: () => SquadRoute,
+} as any)
+const MatchesMatchIdRoute = MatchesMatchIdRouteImport.update({
+  id: '/$matchId',
+  path: '/$matchId',
+  getParentRoute: () => MatchesRoute,
+} as any)
+const CompetitionMatchdayNumberRoute =
+  CompetitionMatchdayNumberRouteImport.update({
+    id: '/matchday/$number',
+    path: '/matchday/$number',
+    getParentRoute: () => CompetitionRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/competition': typeof CompetitionRouteWithChildren
   '/dashboard': typeof DashboardRoute
+  '/finances': typeof FinancesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/matches': typeof MatchesRouteWithChildren
+  '/notifications': typeof NotificationsRoute
+  '/onboarding': typeof OnboardingRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
+  '/squad': typeof SquadRouteWithChildren
+  '/stats': typeof StatsRoute
+  '/tactics': typeof TacticsRoute
+  '/training': typeof TrainingRoute
+  '/transfers': typeof TransfersRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/matches/$matchId': typeof MatchesMatchIdRoute
+  '/squad/$playerId': typeof SquadPlayerIdRoute
+  '/competition/matchday/$number': typeof CompetitionMatchdayNumberRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/competition': typeof CompetitionRouteWithChildren
   '/dashboard': typeof DashboardRoute
+  '/finances': typeof FinancesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/matches': typeof MatchesRouteWithChildren
+  '/notifications': typeof NotificationsRoute
+  '/onboarding': typeof OnboardingRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
+  '/squad': typeof SquadRouteWithChildren
+  '/stats': typeof StatsRoute
+  '/tactics': typeof TacticsRoute
+  '/training': typeof TrainingRoute
+  '/transfers': typeof TransfersRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/matches/$matchId': typeof MatchesMatchIdRoute
+  '/squad/$playerId': typeof SquadPlayerIdRoute
+  '/competition/matchday/$number': typeof CompetitionMatchdayNumberRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/competition': typeof CompetitionRouteWithChildren
   '/dashboard': typeof DashboardRoute
+  '/finances': typeof FinancesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/matches': typeof MatchesRouteWithChildren
+  '/notifications': typeof NotificationsRoute
+  '/onboarding': typeof OnboardingRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
+  '/squad': typeof SquadRouteWithChildren
+  '/stats': typeof StatsRoute
+  '/tactics': typeof TacticsRoute
+  '/training': typeof TrainingRoute
+  '/transfers': typeof TransfersRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/matches/$matchId': typeof MatchesMatchIdRoute
+  '/squad/$playerId': typeof SquadPlayerIdRoute
+  '/competition/matchday/$number': typeof CompetitionMatchdayNumberRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/competition'
     | '/dashboard'
+    | '/finances'
     | '/forgot-password'
     | '/login'
+    | '/matches'
+    | '/notifications'
+    | '/onboarding'
     | '/register'
     | '/reset-password'
     | '/settings'
+    | '/squad'
+    | '/stats'
+    | '/tactics'
+    | '/training'
+    | '/transfers'
     | '/verify-email'
+    | '/matches/$matchId'
+    | '/squad/$playerId'
+    | '/competition/matchday/$number'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/competition'
     | '/dashboard'
+    | '/finances'
     | '/forgot-password'
     | '/login'
+    | '/matches'
+    | '/notifications'
+    | '/onboarding'
     | '/register'
     | '/reset-password'
     | '/settings'
+    | '/squad'
+    | '/stats'
+    | '/tactics'
+    | '/training'
+    | '/transfers'
     | '/verify-email'
+    | '/matches/$matchId'
+    | '/squad/$playerId'
+    | '/competition/matchday/$number'
   id:
     | '__root__'
     | '/'
+    | '/competition'
     | '/dashboard'
+    | '/finances'
     | '/forgot-password'
     | '/login'
+    | '/matches'
+    | '/notifications'
+    | '/onboarding'
     | '/register'
     | '/reset-password'
     | '/settings'
+    | '/squad'
+    | '/stats'
+    | '/tactics'
+    | '/training'
+    | '/transfers'
     | '/verify-email'
+    | '/matches/$matchId'
+    | '/squad/$playerId'
+    | '/competition/matchday/$number'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CompetitionRoute: typeof CompetitionRouteWithChildren
   DashboardRoute: typeof DashboardRoute
+  FinancesRoute: typeof FinancesRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
+  MatchesRoute: typeof MatchesRouteWithChildren
+  NotificationsRoute: typeof NotificationsRoute
+  OnboardingRoute: typeof OnboardingRoute
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SettingsRoute: typeof SettingsRoute
+  SquadRoute: typeof SquadRouteWithChildren
+  StatsRoute: typeof StatsRoute
+  TacticsRoute: typeof TacticsRoute
+  TrainingRoute: typeof TrainingRoute
+  TransfersRoute: typeof TransfersRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
 }
 
@@ -141,6 +308,41 @@ declare module '@tanstack/react-router' {
       path: '/verify-email'
       fullPath: '/verify-email'
       preLoaderRoute: typeof VerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/transfers': {
+      id: '/transfers'
+      path: '/transfers'
+      fullPath: '/transfers'
+      preLoaderRoute: typeof TransfersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/training': {
+      id: '/training'
+      path: '/training'
+      fullPath: '/training'
+      preLoaderRoute: typeof TrainingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tactics': {
+      id: '/tactics'
+      path: '/tactics'
+      fullPath: '/tactics'
+      preLoaderRoute: typeof TacticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stats': {
+      id: '/stats'
+      path: '/stats'
+      fullPath: '/stats'
+      preLoaderRoute: typeof StatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/squad': {
+      id: '/squad'
+      path: '/squad'
+      fullPath: '/squad'
+      preLoaderRoute: typeof SquadRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -164,6 +366,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/matches': {
+      id: '/matches'
+      path: '/matches'
+      fullPath: '/matches'
+      preLoaderRoute: typeof MatchesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -178,11 +401,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/finances': {
+      id: '/finances'
+      path: '/finances'
+      fullPath: '/finances'
+      preLoaderRoute: typeof FinancesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/competition': {
+      id: '/competition'
+      path: '/competition'
+      fullPath: '/competition'
+      preLoaderRoute: typeof CompetitionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -192,17 +429,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/squad/$playerId': {
+      id: '/squad/$playerId'
+      path: '/$playerId'
+      fullPath: '/squad/$playerId'
+      preLoaderRoute: typeof SquadPlayerIdRouteImport
+      parentRoute: typeof SquadRoute
+    }
+    '/matches/$matchId': {
+      id: '/matches/$matchId'
+      path: '/$matchId'
+      fullPath: '/matches/$matchId'
+      preLoaderRoute: typeof MatchesMatchIdRouteImport
+      parentRoute: typeof MatchesRoute
+    }
+    '/competition/matchday/$number': {
+      id: '/competition/matchday/$number'
+      path: '/matchday/$number'
+      fullPath: '/competition/matchday/$number'
+      preLoaderRoute: typeof CompetitionMatchdayNumberRouteImport
+      parentRoute: typeof CompetitionRoute
+    }
   }
 }
 
+interface CompetitionRouteChildren {
+  CompetitionMatchdayNumberRoute: typeof CompetitionMatchdayNumberRoute
+}
+
+const CompetitionRouteChildren: CompetitionRouteChildren = {
+  CompetitionMatchdayNumberRoute: CompetitionMatchdayNumberRoute,
+}
+
+const CompetitionRouteWithChildren = CompetitionRoute._addFileChildren(
+  CompetitionRouteChildren,
+)
+
+interface MatchesRouteChildren {
+  MatchesMatchIdRoute: typeof MatchesMatchIdRoute
+}
+
+const MatchesRouteChildren: MatchesRouteChildren = {
+  MatchesMatchIdRoute: MatchesMatchIdRoute,
+}
+
+const MatchesRouteWithChildren =
+  MatchesRoute._addFileChildren(MatchesRouteChildren)
+
+interface SquadRouteChildren {
+  SquadPlayerIdRoute: typeof SquadPlayerIdRoute
+}
+
+const SquadRouteChildren: SquadRouteChildren = {
+  SquadPlayerIdRoute: SquadPlayerIdRoute,
+}
+
+const SquadRouteWithChildren = SquadRoute._addFileChildren(SquadRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CompetitionRoute: CompetitionRouteWithChildren,
   DashboardRoute: DashboardRoute,
+  FinancesRoute: FinancesRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
+  MatchesRoute: MatchesRouteWithChildren,
+  NotificationsRoute: NotificationsRoute,
+  OnboardingRoute: OnboardingRoute,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SettingsRoute: SettingsRoute,
+  SquadRoute: SquadRouteWithChildren,
+  StatsRoute: StatsRoute,
+  TacticsRoute: TacticsRoute,
+  TrainingRoute: TrainingRoute,
+  TransfersRoute: TransfersRoute,
   VerifyEmailRoute: VerifyEmailRoute,
 }
 export const routeTree = rootRouteImport

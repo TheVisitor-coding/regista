@@ -1,6 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { db } from '@regista/db'
-import { users, refreshTokens } from '@regista/db'
+import { users, refreshTokens, clubs } from '@regista/db'
 import { eq, and, ne } from 'drizzle-orm'
 import { RESERVED_USERNAMES, type AuthUser } from '@regista/shared'
 import {
@@ -18,19 +18,28 @@ import {
   deleteAccountValidator,
 } from './user_validator.js'
 
-function formatUser(user: typeof users.$inferSelect): AuthUser {
+function formatUser(user: typeof users.$inferSelect, club?: { id: string } | null): AuthUser {
   return {
     id: user.id,
     username: user.username,
     email: user.email,
     status: user.status,
-    hasClub: false,
-    clubId: null,
+    hasClub: !!club,
+    clubId: club?.id ?? null,
     emailVerifiedAt: user.emailVerifiedAt?.toISOString() ?? null,
     lastLoginAt: user.lastLoginAt?.toISOString() ?? null,
     usernameChangesRemaining: user.usernameChangesRemaining,
     createdAt: user.createdAt.toISOString(),
   }
+}
+
+async function findUserClub(userId: string) {
+  const [club] = await db
+    .select({ id: clubs.id })
+    .from(clubs)
+    .where(eq(clubs.userId, userId))
+    .limit(1)
+  return club ?? null
 }
 
 export default class UserController {
@@ -45,7 +54,8 @@ export default class UserController {
       return response.notFound({ error: 'User not found' })
     }
 
-    return response.ok({ user: formatUser(user) })
+    const club = await findUserClub(user.id)
+    return response.ok({ user: formatUser(user, club) })
   }
 
   async updateUsername({ auth, request, response }: HttpContext) {
@@ -99,7 +109,8 @@ export default class UserController {
       .where(eq(users.id, auth.userId))
       .returning()
 
-    return response.ok({ user: formatUser(updated) })
+    const userClub = await findUserClub(auth.userId)
+    return response.ok({ user: formatUser(updated, userClub) })
   }
 
   async updateEmail({ auth, request, response }: HttpContext) {
@@ -139,7 +150,8 @@ export default class UserController {
       .where(eq(users.id, auth.userId))
       .returning()
 
-    return response.ok({ user: formatUser(updated) })
+    const userClub = await findUserClub(auth.userId)
+    return response.ok({ user: formatUser(updated, userClub) })
   }
 
   async updatePassword({ auth, request, response }: HttpContext) {

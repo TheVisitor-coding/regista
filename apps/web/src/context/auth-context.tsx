@@ -13,7 +13,37 @@ import type {
   RegisterRequest,
   RefreshResponse,
 } from '@regista/shared'
-import { apiClient, setAccessToken } from '~/lib/api-client'
+import { apiClient, getAccessToken, setAccessToken } from '~/lib/api-client'
+
+const AUTH_USER_STORAGE_KEY = 'regista:auth:user'
+
+function isBrowser() {
+  return typeof window !== 'undefined'
+}
+
+function readStoredUser(): AuthUser | null {
+  if (!isBrowser()) return null
+
+  const raw = window.localStorage.getItem(AUTH_USER_STORAGE_KEY)
+  if (!raw) return null
+
+  try {
+    return JSON.parse(raw) as AuthUser
+  } catch {
+    window.localStorage.removeItem(AUTH_USER_STORAGE_KEY)
+    return null
+  }
+}
+
+function writeStoredUser(user: AuthUser | null) {
+  if (!isBrowser()) return
+
+  if (user) {
+    window.localStorage.setItem(AUTH_USER_STORAGE_KEY, JSON.stringify(user))
+  } else {
+    window.localStorage.removeItem(AUTH_USER_STORAGE_KEY)
+  }
+}
 
 export interface AuthContextValue {
   user: AuthUser | null
@@ -32,17 +62,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    apiClient<RefreshResponse>('/auth/refresh', { method: 'POST' })
-      .then((data) => {
-        setAccessToken(data.accessToken)
-        return apiClient<{ user: AuthUser }>('/users/me')
-      })
-      .then((data) => setUser(data.user))
-      .catch(() => {
+    const storedUser = readStoredUser()
+    if (storedUser) {
+      setUser(storedUser)
+    }
+
+    async function bootstrapAuth() {
+      try {
+        if (!getAccessToken()) {
+          const refresh = await apiClient<RefreshResponse>('/auth/refresh', { method: 'POST' })
+          setAccessToken(refresh.accessToken)
+        }
+
+        const data = await apiClient<{ user: AuthUser }>('/users/me')
+        setUser(data.user)
+        writeStoredUser(data.user)
+      } catch {
         setAccessToken(null)
         setUser(null)
-      })
-      .finally(() => setIsLoading(false))
+        writeStoredUser(null)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    bootstrapAuth()
   }, [])
 
   const login = useCallback(async (data: LoginRequest) => {
@@ -50,8 +94,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       method: 'POST',
       body: JSON.stringify(data),
     })
-    setAccessToken(res.accessToken)
-    setUser(res.user)
+
+    if (res.accessToken) {
+      setAccessToken(res.accessToken)
+      setUser(res.user)
+      writeStoredUser(res.user)
+    } else {
+      setAccessToken(null)
+      setUser(null)
+      writeStoredUser(null)
+    }
+
     return res
   }, [])
 
@@ -60,10 +113,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       method: 'POST',
       body: JSON.stringify(data),
     })
+
     if (res.accessToken) {
       setAccessToken(res.accessToken)
+      setUser(res.user)
+      writeStoredUser(res.user)
+    } else {
+      setAccessToken(null)
+      setUser(null)
+      writeStoredUser(null)
     }
-    setUser(res.user)
+
     return res
   }, [])
 
@@ -73,6 +133,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setAccessToken(null)
       setUser(null)
+      writeStoredUser(null)
     }
   }, [])
 

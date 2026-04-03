@@ -135,3 +135,21 @@ pnpm dev
 - `docker-compose.yml` contient la stack de base: `postgres`, `redis`, `api`, `web`
 - `docker-compose.dev.yml` est un override pour `api` et `web` (mode dev/hot-reload)
 - Le mode dev Docker doit être lancé avec les deux fichiers: `pnpm docker:dev:up`
+
+## Authentification frontend (persistance)
+
+- L'application utilise un modèle hybride pour la session côté client :
+	- `refresh_token` en cookie httpOnly (rotation via `/auth/refresh`)
+	- `accessToken` persisté côté client pour conserver la session au refresh de page
+- Au chargement de l'app, le frontend :
+	1. hydrate l'état auth depuis le stockage local
+	2. tente une resynchronisation via `/users/me`
+	3. fallback sur `/auth/refresh` si nécessaire
+
+### Vérification email en développement
+
+- Par défaut, en environnement `development` et `test`, la vérification email peut être bypassée pour éviter de bloquer le login tant que l'envoi d'emails n'est pas branché.
+- Le backend expose le flag d'environnement `EMAIL_VERIFICATION_REQUIRED` :
+	- `false` (ou absent en dev/test) : inscription active immédiatement, `needsVerification=false`
+	- `true` : comportement strict avec confirmation email
+- En production, la vérification email reste strictement requise par défaut.

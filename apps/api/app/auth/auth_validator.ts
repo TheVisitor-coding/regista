@@ -25,8 +25,8 @@ export const registerValidator = vine.compile(
     email: vine.string().trim().email().maxLength(255),
     password: passwordRules.clone(),
     passwordConfirmation: vine.string(),
-    acceptedTos: vine.accepted(),
-    isOver13: vine.accepted(),
+    acceptedTos: vine.literal(true),
+    isOver13: vine.literal(true),
   }),
 )
 

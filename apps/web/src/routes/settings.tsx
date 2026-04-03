@@ -4,6 +4,7 @@ import { AppLayout } from '~/components/layout/app-layout'
 import { ProfileSection } from '~/components/settings/profile-section'
 import { SecuritySection } from '~/components/settings/security-section'
 import { DangerSection } from '~/components/settings/danger-section'
+import { NotificationPreferencesSection } from '~/components/settings/notification-preferences'
 import { Separator } from '~/components/ui/separator'
 
 export const Route = createFileRoute('/settings')({
@@ -35,6 +36,8 @@ function SettingsPage() {
         <ProfileSection />
         <Separator />
         <SecuritySection />
+        <Separator />
+        <NotificationPreferencesSection />
         <Separator />
         <DangerSection />
       </div>

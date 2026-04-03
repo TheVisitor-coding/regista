@@ -1,8 +1,9 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { db } from '@regista/db'
-import { users, emailVerificationTokens, passwordResetTokens } from '@regista/db'
+import { users, emailVerificationTokens, passwordResetTokens, clubs } from '@regista/db'
 import { eq } from 'drizzle-orm'
 import { REFRESH_TOKEN_EXPIRY_DAYS, RESERVED_USERNAMES, type AuthUser } from '@regista/shared'
+import env from '#start/env'
 import { queueService } from '#services/queue'
 import {
   registerValidator,
@@ -30,6 +31,8 @@ import {
 } from './auth_service.js'
 
 const REFRESH_COOKIE = 'refresh_token'
+const isEmailVerificationRequired =
+  env.get('EMAIL_VERIFICATION_REQUIRED') ?? env.get('NODE_ENV') === 'production'
 
 function setRefreshCookie(ctx: HttpContext, token: string, remember: boolean) {
   const maxAge = remember
@@ -54,14 +57,19 @@ function clearRefreshCookie(ctx: HttpContext) {
   })
 }
 
-function formatUser(user: typeof users.$inferSelect): AuthUser {
+async function findUserClub(userId: string) {
+  const [club] = await db.select({ id: clubs.id }).from(clubs).where(eq(clubs.userId, userId)).limit(1)
+  return club ?? null
+}
+
+function formatUser(user: typeof users.$inferSelect, club?: { id: string } | null): AuthUser {
   return {
     id: user.id,
     username: user.username,
     email: user.email,
     status: user.status,
-    hasClub: false,
-    clubId: null,
+    hasClub: !!club,
+    clubId: club?.id ?? null,
     emailVerifiedAt: user.emailVerifiedAt?.toISOString() ?? null,
     lastLoginAt: user.lastLoginAt?.toISOString() ?? null,
     usernameChangesRemaining: user.usernameChangesRemaining,
@@ -70,7 +78,8 @@ function formatUser(user: typeof users.$inferSelect): AuthUser {
 }
 
 export default class AuthController {
-  async register({ request, response }: HttpContext) {
+  async register(ctx: HttpContext) {
+    const { request, response } = ctx
     const data = await registerValidator.validate(request.all())
 
     if (data.password !== data.passwordConfirmation) {
@@ -109,19 +118,36 @@ export default class AuthController {
         username: data.username,
         email: data.email.toLowerCase(),
         passwordHash,
-        status: 'pending_verification',
+        status: isEmailVerificationRequired ? 'pending_verification' : 'active',
+        emailVerifiedAt: isEmailVerificationRequired ? null : new Date(),
       })
       .returning()
 
-    const verificationToken = await generateEmailVerificationToken(user.id)
+    if (isEmailVerificationRequired) {
+      const verificationToken = await generateEmailVerificationToken(user.id)
 
-    await queueService.enqueue('email', 'send-verification', {
-      to: user.email,
-      username: user.username,
-      token: verificationToken,
-    })
+      await queueService.enqueue('email', 'send-verification', {
+        to: user.email,
+        username: user.username,
+        token: verificationToken,
+      })
+    }
+
+    // If email verification not required, auto-login the user
+    if (!isEmailVerificationRequired) {
+      const accessToken = await generateAccessToken({ sub: user.id, username: user.username })
+      const refreshToken = await generateRefreshToken(user.id)
+      setRefreshCookie(ctx, refreshToken, false)
+
+      return response.created({
+        accessToken,
+        user: formatUser(user),
+        needsVerification: false,
+      })
+    }
 
     return response.created({
+      accessToken: '',
       user: formatUser(user),
       needsVerification: true,
     })
@@ -161,30 +187,49 @@ export default class AuthController {
       })
     }
 
-    if (user.status === 'pending_verification') {
-      return ctx.response.ok({
-        user: formatUser(user),
-        accessToken: '',
-        needsVerification: true,
-      })
+    let authenticatedUser = user
+
+    if (authenticatedUser.status === 'pending_verification') {
+      if (isEmailVerificationRequired) {
+        return ctx.response.ok({
+          user: formatUser(authenticatedUser),
+          accessToken: '',
+          needsVerification: true,
+        })
+      }
+
+      const [activatedUser] = await db
+        .update(users)
+        .set({
+          status: 'active',
+          emailVerifiedAt: authenticatedUser.emailVerifiedAt ?? new Date(),
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, authenticatedUser.id))
+        .returning()
+
+      if (activatedUser) {
+        authenticatedUser = activatedUser
+      }
     }
 
     const accessToken = await generateAccessToken({
-      sub: user.id,
-      username: user.username,
+      sub: authenticatedUser.id,
+      username: authenticatedUser.username,
     })
 
-    const refreshToken = await generateRefreshToken(user.id)
+    const refreshToken = await generateRefreshToken(authenticatedUser.id)
     setRefreshCookie(ctx, refreshToken, data.rememberMe ?? false)
 
     await db
       .update(users)
       .set({ lastLoginAt: new Date(), lastActiveAt: new Date() })
-      .where(eq(users.id, user.id))
+      .where(eq(users.id, authenticatedUser.id))
 
+    const userClub = await findUserClub(authenticatedUser.id)
     return ctx.response.ok({
       accessToken,
-      user: formatUser(user),
+      user: formatUser(authenticatedUser, userClub),
     })
   }
 
