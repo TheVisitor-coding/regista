@@ -139,6 +139,118 @@ export const FORMATIONS: Record<string, string[]> = {
   '3-5-2': ['GK', 'CB', 'CB', 'CB', 'RM', 'CM', 'CDM', 'CM', 'LM', 'ST', 'ST'],
 };
 
+/**
+ * Formation position coordinates on a vertical pitch (0,0 = top-left, 100,100 = bottom-right).
+ * GK is at the bottom (y=90). Attackers at top (y=15).
+ * Each entry maps formation → array of {x, y} matching the FORMATIONS position array order.
+ */
+export const FORMATION_COORDINATES: Record<string, Array<{ x: number; y: number }>> = {
+  '4-4-2': [
+    { x: 50, y: 90 },  // GK
+    { x: 80, y: 72 },  // RB
+    { x: 62, y: 72 },  // CB
+    { x: 38, y: 72 },  // CB
+    { x: 20, y: 72 },  // LB
+    { x: 80, y: 48 },  // RM
+    { x: 62, y: 48 },  // CM
+    { x: 38, y: 48 },  // CM
+    { x: 20, y: 48 },  // LM
+    { x: 62, y: 20 },  // ST
+    { x: 38, y: 20 },  // ST
+  ],
+  '4-3-3': [
+    { x: 50, y: 90 },  // GK
+    { x: 80, y: 72 },  // RB
+    { x: 62, y: 72 },  // CB
+    { x: 38, y: 72 },  // CB
+    { x: 20, y: 72 },  // LB
+    { x: 50, y: 55 },  // CDM
+    { x: 68, y: 45 },  // CM
+    { x: 32, y: 45 },  // CM
+    { x: 80, y: 22 },  // RW
+    { x: 50, y: 18 },  // ST
+    { x: 20, y: 22 },  // LW
+  ],
+  '4-2-3-1': [
+    { x: 50, y: 90 },  // GK
+    { x: 80, y: 72 },  // RB
+    { x: 62, y: 72 },  // CB
+    { x: 38, y: 72 },  // CB
+    { x: 20, y: 72 },  // LB
+    { x: 62, y: 55 },  // CDM
+    { x: 38, y: 55 },  // CDM
+    { x: 78, y: 35 },  // RW
+    { x: 50, y: 32 },  // CAM
+    { x: 22, y: 35 },  // LW
+    { x: 50, y: 15 },  // ST
+  ],
+  '3-4-3': [
+    { x: 50, y: 90 },  // GK
+    { x: 65, y: 72 },  // CB
+    { x: 50, y: 75 },  // CB
+    { x: 35, y: 72 },  // CB
+    { x: 80, y: 48 },  // RM
+    { x: 62, y: 50 },  // CM
+    { x: 38, y: 50 },  // CM
+    { x: 20, y: 48 },  // LM
+    { x: 78, y: 22 },  // RW
+    { x: 50, y: 18 },  // ST
+    { x: 22, y: 22 },  // LW
+  ],
+  '4-5-1': [
+    { x: 50, y: 90 },  // GK
+    { x: 80, y: 72 },  // RB
+    { x: 62, y: 72 },  // CB
+    { x: 38, y: 72 },  // CB
+    { x: 20, y: 72 },  // LB
+    { x: 80, y: 48 },  // RM
+    { x: 62, y: 45 },  // CM
+    { x: 50, y: 55 },  // CDM
+    { x: 38, y: 45 },  // CM
+    { x: 20, y: 48 },  // LM
+    { x: 50, y: 18 },  // ST
+  ],
+  '5-4-1': [
+    { x: 50, y: 90 },  // GK
+    { x: 85, y: 72 },  // RB
+    { x: 65, y: 72 },  // CB
+    { x: 50, y: 75 },  // CB
+    { x: 35, y: 72 },  // CB
+    { x: 15, y: 72 },  // LB
+    { x: 78, y: 48 },  // RM
+    { x: 60, y: 48 },  // CM
+    { x: 40, y: 48 },  // CM
+    { x: 22, y: 48 },  // LM
+    { x: 50, y: 18 },  // ST
+  ],
+  '5-3-2': [
+    { x: 50, y: 90 },  // GK
+    { x: 85, y: 72 },  // RB
+    { x: 65, y: 72 },  // CB
+    { x: 50, y: 75 },  // CB
+    { x: 35, y: 72 },  // CB
+    { x: 15, y: 72 },  // LB
+    { x: 65, y: 48 },  // CM
+    { x: 50, y: 52 },  // CDM
+    { x: 35, y: 48 },  // CM
+    { x: 62, y: 20 },  // ST
+    { x: 38, y: 20 },  // ST
+  ],
+  '3-5-2': [
+    { x: 50, y: 90 },  // GK
+    { x: 65, y: 72 },  // CB
+    { x: 50, y: 75 },  // CB
+    { x: 35, y: 72 },  // CB
+    { x: 82, y: 48 },  // RM
+    { x: 65, y: 45 },  // CM
+    { x: 50, y: 52 },  // CDM
+    { x: 35, y: 45 },  // CM
+    { x: 18, y: 48 },  // LM
+    { x: 62, y: 20 },  // ST
+    { x: 38, y: 20 },  // ST
+  ],
+};
+
 /** AI profile → preferred formations (in order of preference) */
 export const AI_PROFILE_FORMATIONS: Record<string, string[]> = {
   offensive: ['4-3-3', '4-2-3-1', '3-4-3'],

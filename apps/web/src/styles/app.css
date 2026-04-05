@@ -3,6 +3,23 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* Colors — Regista Identity */
+  --color-nuit: var(--nuit);
+  --color-surface: var(--surface);
+  --color-surface-light: var(--surface-light);
+  --color-surface-header: var(--surface-header);
+  --color-regista-green: var(--regista-green);
+  --color-pelouse: var(--pelouse);
+  --color-pelouse-light: var(--pelouse-light);
+  --color-orange: var(--orange);
+  --color-jaune: var(--jaune);
+  --color-blanc: var(--blanc);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-on-green: var(--text-on-green);
+  --color-loss: var(--loss);
+
+  /* shadcn semantic tokens */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -22,15 +39,21 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+
+  /* Radii */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* Charts */
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+
+  /* Sidebar */
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -39,49 +62,193 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Fonts */
+  --font-display: 'Barlow Condensed', sans-serif;
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
 }
 
+/* ===== REGISTA DESIGN SYSTEM ===== */
+
 :root {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.648 0.2 156);
-  --primary-foreground: oklch(0.145 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.648 0.2 156);
-  --radius: 0.625rem;
-  --chart-1: oklch(0.648 0.2 156);
-  --chart-2: oklch(0.6 0.118 184);
-  --chart-3: oklch(0.398 0 0);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.145 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.648 0.2 156);
-  --sidebar-primary-foreground: oklch(0.145 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.648 0.2 156);
+  /* Regista Identity Palette (hex from Figma + identity doc) */
+  --nuit: #05170c;
+  --surface: #0d1f14;
+  --surface-light: #1c2e22;
+  --surface-header: #081f11;
+  --regista-green: #2e9e5b;
+  --pelouse: #3fce7a;
+  --pelouse-light: #71dc92;
+  --orange: #ff6b35;
+  --jaune: #f5e642;
+  --blanc: #eae8e1;
+  --text-primary: #d2e8d6;
+  --text-secondary: #bdcabc;
+  --text-on-green: #d1fae5;
+  --loss: #ffb4ab;
+
+  /* shadcn token mapping */
+  --background: #05170c;
+  --foreground: #d2e8d6;
+  --card: #0d1f14;
+  --card-foreground: #d2e8d6;
+  --popover: #0d1f14;
+  --popover-foreground: #d2e8d6;
+  --primary: #2e9e5b;
+  --primary-foreground: #05170c;
+  --secondary: #1c2e22;
+  --secondary-foreground: #d2e8d6;
+  --muted: #1c2e22;
+  --muted-foreground: #bdcabc;
+  --accent: #3fce7a;
+  --accent-foreground: #00391a;
+  --destructive: #ff6b35;
+  --destructive-foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.05);
+  --input: #26392c;
+  --ring: #71dc92;
+  --radius: 1rem;
+
+  /* Charts */
+  --chart-1: #2e9e5b;
+  --chart-2: #71dc92;
+  --chart-3: #ff6b35;
+  --chart-4: #f5e642;
+  --chart-5: #ffb4ab;
+
+  /* Sidebar */
+  --sidebar: rgba(5, 23, 12, 0.6);
+  --sidebar-foreground: rgba(209, 250, 229, 0.5);
+  --sidebar-primary: #3fce7a;
+  --sidebar-primary-foreground: #05170c;
+  --sidebar-accent: rgba(63, 206, 122, 0.1);
+  --sidebar-accent-foreground: #3fce7a;
+  --sidebar-border: rgba(255, 255, 255, 0.05);
+  --sidebar-ring: #71dc92;
 }
 
 @layer base {
   * {
     @apply border-border;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-body);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary;
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+
+@layer utilities {
+  .card-hover {
+    @apply transition-all duration-200 ease-out;
+  }
+  .card-hover:hover {
+    @apply -translate-y-0.5 shadow-lg shadow-primary/5;
+  }
+
+  .skeleton {
+    @apply animate-pulse rounded-md bg-muted;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #2e9e5b, #71dc92);
+  }
+
+  .glass {
+    @apply bg-card/60 backdrop-blur-sm border-border/50;
+  }
+
+  .pulse-live {
+    animation: pulse-live 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .score-flash {
+    animation: score-flash 0.6s ease-out;
+  }
+
+  .stat-bar-fill {
+    animation: stat-bar-fill 0.8s ease-out;
+  }
+
+  .fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+
+  .slide-up {
+    animation: slide-up 0.4s ease-out;
+  }
+
+  .glow-green {
+    box-shadow: 0 0 8px rgba(113, 220, 146, 0.6);
+  }
+
+  .glow-loss {
+    box-shadow: 0 0 8px rgba(255, 180, 171, 0.6);
+  }
+}
+
+@keyframes pulse-live {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes score-flash {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.3); color: #f5e642; }
+  100% { transform: scale(1); }
+}
+
+@keyframes stat-bar-fill {
+  from { width: 0%; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== SCROLLBAR ===== */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #26392c;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3a5444;
+}
+
+/* ===== TYPOGRAPHY HELPERS ===== */
+
+@layer utilities {
+  .font-stat {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
   }
 }

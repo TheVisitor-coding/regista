@@ -15,7 +15,7 @@ export function MobileBottomBar() {
   const currentPath = routerState.location.pathname
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background lg:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-[rgba(255,255,255,0.05)] bg-[rgba(5,23,12,0.95)] backdrop-blur-md lg:hidden">
       <div className="flex h-14 items-center justify-around">
         {MOBILE_NAV_ITEMS.map((item) => {
           const Icon = item.icon
@@ -26,10 +26,10 @@ export function MobileBottomBar() {
               key={item.to}
               to={item.to}
               className={cn(
-                'flex flex-col items-center gap-0.5 px-3 py-1 text-[10px] font-medium transition-colors',
+                'flex flex-col items-center gap-0.5 px-3 py-1 font-heading text-[10px] uppercase tracking-[0.5px] transition-colors',
                 isActive
-                  ? 'text-primary'
-                  : 'text-muted-foreground',
+                  ? 'text-pelouse'
+                  : 'text-[rgba(209,250,229,0.5)]',
               )}
             >
               <Icon className="h-5 w-5" />

@@ -1,6 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { db } from '@regista/db'
-import { clubs, clubStaff, users, staffRoleEnum } from '@regista/db'
+import { clubs, clubStaff, divisions, users, staffRoleEnum } from '@regista/db'
 import { INITIAL_CLUB_BUDGET_CENTS } from '@regista/shared'
 import { eq, sql } from 'drizzle-orm'
 import { createClubValidator, updateClubValidator } from './club_validator.js'
@@ -8,6 +8,7 @@ import { SquadGenerationService } from './squad_generation_service.js'
 import { NotificationService } from '../notifications/notification_service.js'
 import { LeagueService } from '../competition/league_service.js'
 import { OnboardingService } from '../onboarding/onboarding_service.js'
+import { TacticalPresetsService } from '../tactics/presets_service.js'
 
 type StaffRole = (typeof staffRoleEnum.enumValues)[number]
 
@@ -141,8 +142,9 @@ export default class ClubController {
         // Create league with AI clubs and calendar
         await LeagueService.createLeague(club.id)
 
-        // Initialize onboarding missions
+        // Initialize onboarding missions + default tactical presets
         await OnboardingService.initializeMissions(auth.userId)
+        await TacticalPresetsService.createDefaultPresets(club.id)
 
         // Refetch club with league/division info
         const [updatedClub] = await db
@@ -164,7 +166,17 @@ export default class ClubController {
             })
         }
 
-        return response.ok({ club: formatClub(club) })
+        let divisionName: string | null = null
+        if (club.divisionId) {
+            const [div] = await db
+                .select({ name: divisions.name })
+                .from(divisions)
+                .where(eq(divisions.id, club.divisionId))
+                .limit(1)
+            divisionName = div?.name ?? null
+        }
+
+        return response.ok({ club: formatClub(club), divisionName })
     }
 
     async updateMine({ auth, request, response }: HttpContext) {

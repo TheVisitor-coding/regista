@@ -67,7 +67,7 @@ function DashboardPage() {
   if (!data) return null
 
   return (
-    <AppLayout unreadCount={data.unreadNotifications}>
+    <AppLayout dashboardData={data}>
       <DashboardContent data={data} />
     </AppLayout>
   )

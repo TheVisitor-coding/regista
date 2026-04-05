@@ -1,0 +1,505 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Barlow+Condensed:wght@400;600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .doc {
+    font-family: 'Nunito', sans-serif;
+    background: var(--color-background-tertiary);
+    padding: 2rem 1.5rem;
+    color: var(--color-text-primary);
+  }
+
+  .doc-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .logo-mark {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #1B6F3E 0%, #2E9E5B 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: #EAFFD4;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+  }
+
+  .doc-title-block h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-text-primary);
+  }
+
+  .doc-title-block p {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+  }
+
+  .section {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+    margin-bottom: 1rem;
+  }
+
+  .tagline {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--color-text-primary);
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+
+  .tagline span { color: #2E9E5B; }
+
+  .description {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+
+  .palette-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .swatch {
+    flex: 1;
+    min-width: 80px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .swatch-color {
+    height: 52px;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .swatch-info {
+    padding: 8px 8px 6px;
+    background: var(--color-background-secondary);
+    border-radius: 0 0 8px 8px;
+  }
+
+  .swatch-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    display: block;
+  }
+
+  .swatch-hex {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    display: block;
+  }
+
+  .swatch-role {
+    font-size: 10px;
+    color: var(--color-text-tertiary);
+    display: block;
+    margin-top: 2px;
+  }
+
+  .gradient-pill {
+    height: 52px;
+    border-radius: 10px;
+    margin-bottom: 0.75rem;
+  }
+
+  .type-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .type-block {}
+
+  .type-sample-display {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    line-height: 1;
+  }
+
+  .type-sample-body {
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    margin-top: 4px;
+  }
+
+  .type-meta {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    margin-top: 6px;
+  }
+
+  .type-usage {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    border-left: 2px solid #2E9E5B;
+    padding-left: 8px;
+    margin-top: 8px;
+  }
+
+  .mood-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .mood-card {
+    border-radius: 10px;
+    padding: 1rem;
+    background: var(--color-background-secondary);
+  }
+
+  .mood-icon {
+    font-size: 22px;
+    margin-bottom: 6px;
+    display: block;
+    font-style: normal;
+  }
+
+  .mood-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
+  }
+
+  .mood-desc {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+  }
+
+  .rules-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .rules-list li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+  }
+
+  .rule-do {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .do { background: #D4F7E2; color: #1B6F3E; }
+  .dont { background: #FDDCDC; color: #B83232; }
+
+  .asset-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .asset-card {
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--color-background-secondary);
+  }
+
+  .asset-preview {
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .player-figure {
+    width: 54px;
+    height: 80px;
+    position: relative;
+  }
+
+  .asset-label {
+    padding: 8px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--color-text-secondary);
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .divider {
+    height: 0.5px;
+    background: var(--color-border-tertiary);
+    margin: 0.75rem 0;
+  }
+
+  .tone-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .tone-pill {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .tone-yes { background: #D4F7E2; color: #1B6F3E; }
+  .tone-no { background: var(--color-background-secondary); color: var(--color-text-tertiary); text-decoration: line-through; }
+</style>
+
+<div class="doc">
+
+  <div class="doc-header">
+    <div class="logo-mark">R</div>
+    <div class="doc-title-block">
+      <h1>Regista</h1>
+      <p>Document d'identité visuelle — v1.0</p>
+    </div>
+  </div>
+
+  <!-- Direction créative -->
+  <div class="section">
+    <div class="section-label">Direction créative</div>
+    <div class="tagline">Le <span>beau jeu</span>,<br>entre tes mains.</div>
+    <div style="height: 12px;"></div>
+    <div class="description">Regista incarne l'art du football intelligent. Pas le football des statistiques froides — celui de la vision, du timing, du plaisir de jouer juste. L'identité visuelle doit donner envie de jouer dès le premier regard : colorée, vivante, arrondie, mais avec la profondeur d'un vrai jeu de stratégie.</div>
+  </div>
+
+  <!-- Palette -->
+  <div class="section">
+    <div class="section-label">Palette de couleurs</div>
+
+    <div style="margin-bottom: 0.75rem;">
+      <div class="gradient-pill" style="background: linear-gradient(135deg, #0D1F14 0%, #1B6F3E 50%, #3FCE7A 100%);"></div>
+      <div style="font-size: 11px; color: var(--color-text-tertiary);">Gradient signature — fonds de cartes, headers, backgrounds profonds</div>
+    </div>
+
+    <div class="palette-row">
+      <div class="swatch">
+        <div class="swatch-color" style="background: #0D1F14;"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Nuit pelouse</span>
+          <span class="swatch-hex">#0D1F14</span>
+          <span class="swatch-role">Fond principal</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background: #2E9E5B;"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Regista vert</span>
+          <span class="swatch-hex">#2E9E5B</span>
+          <span class="swatch-role">Couleur principale</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background: #3FCE7A;"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Pelouse vive</span>
+          <span class="swatch-hex">#3FCE7A</span>
+          <span class="swatch-role">Accent / CTA</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background: #FF6B35;"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Orange action</span>
+          <span class="swatch-hex">#FF6B35</span>
+          <span class="swatch-role">Énergie / alertes</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background: #F5E642;"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Jaune passe</span>
+          <span class="swatch-hex">#F5E642</span>
+          <span class="swatch-role">Récompense / succès</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background: #EAE8E1;"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Blanc chaud</span>
+          <span class="swatch-hex">#EAE8E1</span>
+          <span class="swatch-role">Texte / surfaces claires</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Typographie -->
+  <div class="section">
+    <div class="section-label">Typographie</div>
+    <div class="type-row">
+      <div class="type-block">
+        <div class="type-sample-display">Barlow Condensed</div>
+        <div class="type-meta">Display · Titres · Scores · Labels UI</div>
+        <div class="type-usage">Énergie compacte, dynamisme visuel, lecture rapide des données de match</div>
+      </div>
+      <div class="type-block">
+        <div class="type-sample-body">Nunito — Le texte courant qui respire et accompagne l'interface</div>
+        <div class="type-meta">Body · Navigation · Descriptions · Boutons</div>
+        <div class="type-usage">Arrondis naturels, chaleur, lisibilité. Cohérent avec la direction "vivant"</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mood -->
+  <div class="section">
+    <div class="section-label">Identité & valeurs</div>
+    <div class="mood-grid">
+      <div class="mood-card">
+        <i class="mood-icon">◎</i>
+        <div class="mood-title">Vivant</div>
+        <div class="mood-desc">Gradients profonds, micro-animations sur les actions, cartes qui respirent</div>
+      </div>
+      <div class="mood-card">
+        <i class="mood-icon">◈</i>
+        <div class="mood-title">Lisible</div>
+        <div class="mood-desc">Dense mais jamais écrasant. L'info de match accessible en un coup d'oeil</div>
+      </div>
+      <div class="mood-card">
+        <i class="mood-icon">◐</i>
+        <div class="mood-title">Coloré</div>
+        <div class="mood-desc">Vert pelouse comme couleur identitaire, orange pour l'action, jaune pour la victoire</div>
+      </div>
+      <div class="mood-card">
+        <i class="mood-icon">◉</i>
+        <div class="mood-title">Accessible</div>
+        <div class="mood-desc">Arrondi généreux (radius 12–16px), hiérarchie claire, pas de jargon FM</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assets joueurs -->
+  <div class="section">
+    <div class="section-label">Style des assets — joueurs & staff</div>
+    <div class="description" style="margin-bottom: 1rem;">Illustrations 2D flat avec formes rondes et palette limitée. Style "trading card" moderne — silhouettes identifiables, expressions dynamiques, fond coloré par rôle. Outil recommandé : <strong>Leonardo.ai</strong></div>
+    <div class="asset-grid">
+
+      <div class="asset-card">
+        <div class="asset-preview" style="background: linear-gradient(160deg, #1B6F3E, #0D1F14);">
+          <svg width="50" height="78" viewBox="0 0 50 78">
+            <ellipse cx="25" cy="12" rx="11" ry="12" fill="#F5CBA7"/>
+            <rect x="10" y="22" width="30" height="34" rx="8" fill="#2E9E5B"/>
+            <rect x="6" y="24" width="10" height="22" rx="5" fill="#2E9E5B"/>
+            <rect x="34" y="24" width="10" height="22" rx="5" fill="#2E9E5B"/>
+            <rect x="12" y="54" width="11" height="22" rx="5" fill="#1B3A2A"/>
+            <rect x="27" y="54" width="11" height="22" rx="5" fill="#1B3A2A"/>
+          </svg>
+        </div>
+        <div class="asset-label">Capitaine</div>
+      </div>
+
+      <div class="asset-card">
+        <div class="asset-preview" style="background: linear-gradient(160deg, #7B3E8C, #1A0D2E);">
+          <svg width="50" height="78" viewBox="0 0 50 78">
+            <ellipse cx="25" cy="12" rx="11" ry="12" fill="#FDEBD0"/>
+            <rect x="10" y="22" width="30" height="34" rx="8" fill="#9B59B6"/>
+            <rect x="6" y="24" width="10" height="22" rx="5" fill="#9B59B6"/>
+            <rect x="34" y="24" width="10" height="22" rx="5" fill="#9B59B6"/>
+            <rect x="12" y="54" width="11" height="22" rx="5" fill="#2C1A3E"/>
+            <rect x="27" y="54" width="11" height="22" rx="5" fill="#2C1A3E"/>
+          </svg>
+        </div>
+        <div class="asset-label">Gardien</div>
+      </div>
+
+      <div class="asset-card">
+        <div class="asset-preview" style="background: linear-gradient(160deg, #8C3E1B, #2E0D00);">
+          <svg width="50" height="78" viewBox="0 0 50 78">
+            <ellipse cx="25" cy="12" rx="11" ry="12" fill="#D4956A"/>
+            <rect x="10" y="22" width="30" height="34" rx="8" fill="#FF6B35"/>
+            <rect x="6" y="24" width="10" height="22" rx="5" fill="#FF6B35"/>
+            <rect x="34" y="24" width="10" height="22" rx="5" fill="#FF6B35"/>
+            <rect x="12" y="54" width="11" height="22" rx="5" fill="#3D1200"/>
+            <rect x="27" y="54" width="11" height="22" rx="5" fill="#3D1200"/>
+          </svg>
+        </div>
+        <div class="asset-label">Coach</div>
+      </div>
+
+    </div>
+    <div style="margin-top: 10px; font-size: 12px; color: var(--color-text-tertiary);">Prompt Leonardo.ai de base : "flat 2D illustration, football player, bold rounded shapes, solid color jersey, minimal face, clean background, card game style, vibrant colors"</div>
+  </div>
+
+  <!-- Ton éditorial -->
+  <div class="section">
+    <div class="section-label">Ton éditorial — comment Regista parle</div>
+    <div class="tone-row" style="margin-bottom: 0.75rem;">
+      <span class="tone-pill tone-yes">Direct</span>
+      <span class="tone-pill tone-yes">Enthousiaste</span>
+      <span class="tone-pill tone-yes">Accessible</span>
+      <span class="tone-pill tone-yes">Encourageant</span>
+      <span class="tone-pill tone-no">Jargon FM</span>
+      <span class="tone-pill tone-no">Froid / technique</span>
+      <span class="tone-pill tone-no">Trop formel</span>
+    </div>
+    <div class="description">Le jeu parle comme un fan de foot passionné, pas comme une base de données. Victoire → "Magnifique !" pas "Match gagné". Transfert réussi → "Tu as frappé fort sur ce coup."</div>
+  </div>
+
+  <!-- Règles -->
+  <div class="section">
+    <div class="section-label">Règles design à ne jamais violer</div>
+    <ul class="rules-list">
+      <li><span class="rule-do do">DO</span> Utiliser les gradients sur les fonds de cards et headers — jamais sur les textes</li>
+      <li><span class="rule-do do">DO</span> Border-radius minimum 10px sur tous les composants — pas d'angles droits</li>
+      <li><span class="rule-do do">DO</span> Vert #2E9E5B pour toutes les actions principales (CTA, statuts positifs)</li>
+      <li><span class="rule-do do">DO</span> Orange #FF6B35 réservé aux actions urgentes (blessure, suspension, alerte)</li>
+      <li><span class="rule-do dont">NON</span> Jamais de couleur rouge seule pour un état critique — trop alarmiste pour un jeu</li>
+      <li><span class="rule-do dont">NON</span> Pas de texte blanc pur (#FFF) — utiliser le blanc chaud #EAE8E1</li>
+      <li><span class="rule-do dont">NON</span> Pas de grilles sans respiration — padding minimum 16px dans chaque card</li>
+    </ul>
+  </div>
+
+</div>

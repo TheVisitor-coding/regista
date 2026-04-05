@@ -27,9 +27,10 @@ import { Route as FinancesRouteImport } from './routes/finances'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CompetitionRouteImport } from './routes/competition'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SquadPlayerIdRouteImport } from './routes/squad.$playerId'
-import { Route as MatchesMatchIdRouteImport } from './routes/matches.$matchId'
-import { Route as CompetitionMatchdayNumberRouteImport } from './routes/competition.matchday.$number'
+import { Route as PlayerCompareRouteImport } from './routes/player.compare'
+import { Route as PlayerPlayerIdRouteImport } from './routes/player.$playerId'
+import { Route as MatchdayNumberRouteImport } from './routes/matchday.$number'
+import { Route as MatchMatchIdRouteImport } from './routes/match.$matchId'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -121,92 +122,99 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SquadPlayerIdRoute = SquadPlayerIdRouteImport.update({
-  id: '/$playerId',
-  path: '/$playerId',
-  getParentRoute: () => SquadRoute,
+const PlayerCompareRoute = PlayerCompareRouteImport.update({
+  id: '/player/compare',
+  path: '/player/compare',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const MatchesMatchIdRoute = MatchesMatchIdRouteImport.update({
-  id: '/$matchId',
-  path: '/$matchId',
-  getParentRoute: () => MatchesRoute,
+const PlayerPlayerIdRoute = PlayerPlayerIdRouteImport.update({
+  id: '/player/$playerId',
+  path: '/player/$playerId',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const CompetitionMatchdayNumberRoute =
-  CompetitionMatchdayNumberRouteImport.update({
-    id: '/matchday/$number',
-    path: '/matchday/$number',
-    getParentRoute: () => CompetitionRoute,
-  } as any)
+const MatchdayNumberRoute = MatchdayNumberRouteImport.update({
+  id: '/matchday/$number',
+  path: '/matchday/$number',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MatchMatchIdRoute = MatchMatchIdRouteImport.update({
+  id: '/match/$matchId',
+  path: '/match/$matchId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/competition': typeof CompetitionRouteWithChildren
+  '/competition': typeof CompetitionRoute
   '/dashboard': typeof DashboardRoute
   '/finances': typeof FinancesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
-  '/matches': typeof MatchesRouteWithChildren
+  '/matches': typeof MatchesRoute
   '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
-  '/squad': typeof SquadRouteWithChildren
+  '/squad': typeof SquadRoute
   '/stats': typeof StatsRoute
   '/tactics': typeof TacticsRoute
   '/training': typeof TrainingRoute
   '/transfers': typeof TransfersRoute
   '/verify-email': typeof VerifyEmailRoute
-  '/matches/$matchId': typeof MatchesMatchIdRoute
-  '/squad/$playerId': typeof SquadPlayerIdRoute
-  '/competition/matchday/$number': typeof CompetitionMatchdayNumberRoute
+  '/match/$matchId': typeof MatchMatchIdRoute
+  '/matchday/$number': typeof MatchdayNumberRoute
+  '/player/$playerId': typeof PlayerPlayerIdRoute
+  '/player/compare': typeof PlayerCompareRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/competition': typeof CompetitionRouteWithChildren
+  '/competition': typeof CompetitionRoute
   '/dashboard': typeof DashboardRoute
   '/finances': typeof FinancesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
-  '/matches': typeof MatchesRouteWithChildren
+  '/matches': typeof MatchesRoute
   '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
-  '/squad': typeof SquadRouteWithChildren
+  '/squad': typeof SquadRoute
   '/stats': typeof StatsRoute
   '/tactics': typeof TacticsRoute
   '/training': typeof TrainingRoute
   '/transfers': typeof TransfersRoute
   '/verify-email': typeof VerifyEmailRoute
-  '/matches/$matchId': typeof MatchesMatchIdRoute
-  '/squad/$playerId': typeof SquadPlayerIdRoute
-  '/competition/matchday/$number': typeof CompetitionMatchdayNumberRoute
+  '/match/$matchId': typeof MatchMatchIdRoute
+  '/matchday/$number': typeof MatchdayNumberRoute
+  '/player/$playerId': typeof PlayerPlayerIdRoute
+  '/player/compare': typeof PlayerCompareRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/competition': typeof CompetitionRouteWithChildren
+  '/competition': typeof CompetitionRoute
   '/dashboard': typeof DashboardRoute
   '/finances': typeof FinancesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
-  '/matches': typeof MatchesRouteWithChildren
+  '/matches': typeof MatchesRoute
   '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
-  '/squad': typeof SquadRouteWithChildren
+  '/squad': typeof SquadRoute
   '/stats': typeof StatsRoute
   '/tactics': typeof TacticsRoute
   '/training': typeof TrainingRoute
   '/transfers': typeof TransfersRoute
   '/verify-email': typeof VerifyEmailRoute
-  '/matches/$matchId': typeof MatchesMatchIdRoute
-  '/squad/$playerId': typeof SquadPlayerIdRoute
-  '/competition/matchday/$number': typeof CompetitionMatchdayNumberRoute
+  '/match/$matchId': typeof MatchMatchIdRoute
+  '/matchday/$number': typeof MatchdayNumberRoute
+  '/player/$playerId': typeof PlayerPlayerIdRoute
+  '/player/compare': typeof PlayerCompareRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -229,9 +237,10 @@ export interface FileRouteTypes {
     | '/training'
     | '/transfers'
     | '/verify-email'
-    | '/matches/$matchId'
-    | '/squad/$playerId'
-    | '/competition/matchday/$number'
+    | '/match/$matchId'
+    | '/matchday/$number'
+    | '/player/$playerId'
+    | '/player/compare'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -252,9 +261,10 @@ export interface FileRouteTypes {
     | '/training'
     | '/transfers'
     | '/verify-email'
-    | '/matches/$matchId'
-    | '/squad/$playerId'
-    | '/competition/matchday/$number'
+    | '/match/$matchId'
+    | '/matchday/$number'
+    | '/player/$playerId'
+    | '/player/compare'
   id:
     | '__root__'
     | '/'
@@ -275,30 +285,35 @@ export interface FileRouteTypes {
     | '/training'
     | '/transfers'
     | '/verify-email'
-    | '/matches/$matchId'
-    | '/squad/$playerId'
-    | '/competition/matchday/$number'
+    | '/match/$matchId'
+    | '/matchday/$number'
+    | '/player/$playerId'
+    | '/player/compare'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CompetitionRoute: typeof CompetitionRouteWithChildren
+  CompetitionRoute: typeof CompetitionRoute
   DashboardRoute: typeof DashboardRoute
   FinancesRoute: typeof FinancesRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
-  MatchesRoute: typeof MatchesRouteWithChildren
+  MatchesRoute: typeof MatchesRoute
   NotificationsRoute: typeof NotificationsRoute
   OnboardingRoute: typeof OnboardingRoute
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SettingsRoute: typeof SettingsRoute
-  SquadRoute: typeof SquadRouteWithChildren
+  SquadRoute: typeof SquadRoute
   StatsRoute: typeof StatsRoute
   TacticsRoute: typeof TacticsRoute
   TrainingRoute: typeof TrainingRoute
   TransfersRoute: typeof TransfersRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
+  MatchMatchIdRoute: typeof MatchMatchIdRoute
+  MatchdayNumberRoute: typeof MatchdayNumberRoute
+  PlayerPlayerIdRoute: typeof PlayerPlayerIdRoute
+  PlayerCompareRoute: typeof PlayerCompareRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -429,82 +444,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/squad/$playerId': {
-      id: '/squad/$playerId'
-      path: '/$playerId'
-      fullPath: '/squad/$playerId'
-      preLoaderRoute: typeof SquadPlayerIdRouteImport
-      parentRoute: typeof SquadRoute
+    '/player/compare': {
+      id: '/player/compare'
+      path: '/player/compare'
+      fullPath: '/player/compare'
+      preLoaderRoute: typeof PlayerCompareRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/matches/$matchId': {
-      id: '/matches/$matchId'
-      path: '/$matchId'
-      fullPath: '/matches/$matchId'
-      preLoaderRoute: typeof MatchesMatchIdRouteImport
-      parentRoute: typeof MatchesRoute
+    '/player/$playerId': {
+      id: '/player/$playerId'
+      path: '/player/$playerId'
+      fullPath: '/player/$playerId'
+      preLoaderRoute: typeof PlayerPlayerIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/competition/matchday/$number': {
-      id: '/competition/matchday/$number'
+    '/matchday/$number': {
+      id: '/matchday/$number'
       path: '/matchday/$number'
-      fullPath: '/competition/matchday/$number'
-      preLoaderRoute: typeof CompetitionMatchdayNumberRouteImport
-      parentRoute: typeof CompetitionRoute
+      fullPath: '/matchday/$number'
+      preLoaderRoute: typeof MatchdayNumberRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/match/$matchId': {
+      id: '/match/$matchId'
+      path: '/match/$matchId'
+      fullPath: '/match/$matchId'
+      preLoaderRoute: typeof MatchMatchIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
 
-interface CompetitionRouteChildren {
-  CompetitionMatchdayNumberRoute: typeof CompetitionMatchdayNumberRoute
-}
-
-const CompetitionRouteChildren: CompetitionRouteChildren = {
-  CompetitionMatchdayNumberRoute: CompetitionMatchdayNumberRoute,
-}
-
-const CompetitionRouteWithChildren = CompetitionRoute._addFileChildren(
-  CompetitionRouteChildren,
-)
-
-interface MatchesRouteChildren {
-  MatchesMatchIdRoute: typeof MatchesMatchIdRoute
-}
-
-const MatchesRouteChildren: MatchesRouteChildren = {
-  MatchesMatchIdRoute: MatchesMatchIdRoute,
-}
-
-const MatchesRouteWithChildren =
-  MatchesRoute._addFileChildren(MatchesRouteChildren)
-
-interface SquadRouteChildren {
-  SquadPlayerIdRoute: typeof SquadPlayerIdRoute
-}
-
-const SquadRouteChildren: SquadRouteChildren = {
-  SquadPlayerIdRoute: SquadPlayerIdRoute,
-}
-
-const SquadRouteWithChildren = SquadRoute._addFileChildren(SquadRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CompetitionRoute: CompetitionRouteWithChildren,
+  CompetitionRoute: CompetitionRoute,
   DashboardRoute: DashboardRoute,
   FinancesRoute: FinancesRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
-  MatchesRoute: MatchesRouteWithChildren,
+  MatchesRoute: MatchesRoute,
   NotificationsRoute: NotificationsRoute,
   OnboardingRoute: OnboardingRoute,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SettingsRoute: SettingsRoute,
-  SquadRoute: SquadRouteWithChildren,
+  SquadRoute: SquadRoute,
   StatsRoute: StatsRoute,
   TacticsRoute: TacticsRoute,
   TrainingRoute: TrainingRoute,
   TransfersRoute: TransfersRoute,
   VerifyEmailRoute: VerifyEmailRoute,
+  MatchMatchIdRoute: MatchMatchIdRoute,
+  MatchdayNumberRoute: MatchdayNumberRoute,
+  PlayerPlayerIdRoute: PlayerPlayerIdRoute,
+  PlayerCompareRoute: PlayerCompareRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

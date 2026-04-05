@@ -102,13 +102,20 @@ export interface PlayerListItem {
   id: string
   firstName: string
   lastName: string
+  nationality: string
   position: PlayerPosition
+  secondaryPositions: PlayerPosition[]
   overall: number
+  potential: number
   fatigue: number
   isInjured: boolean
+  injuryMatchesRemaining: number
+  injuryType: string | null
   isSuspended: boolean
+  suspensionMatchesRemaining: number
   age: number
   weeklySalary: number
+  contractMatchesRemaining: number
 }
 
 /** Position weights for overall calculation (weights sum to 100 per position) */

@@ -71,6 +71,7 @@ export const clubs = pgTable(
         divisionId: uuid('division_id'),
         isAi: boolean('is_ai').notNull().default(false),
         aiProfile: aiProfileEnum('ai_profile'),
+        autoAdjustment: boolean('auto_adjustment').notNull().default(true),
         nameChangesRemaining: integer('name_changes_remaining').notNull().default(1),
         createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
         updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),

@@ -13,7 +13,7 @@ export function MatchCard({ match, currentClubId }: MatchCardProps) {
 
   return (
     <Link
-      to="/matches/$matchId"
+      to="/match/$matchId"
       params={{ matchId: match.id }}
       className="flex items-center gap-3 rounded-lg border border-border p-3 transition-colors hover:bg-accent/30"
     >

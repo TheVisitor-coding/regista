@@ -19,3 +19,39 @@ export async function updateMatchTactics(matchId: string, tactics: Partial<Tacti
     body: JSON.stringify(tactics),
   })
 }
+
+export interface MatchSummary {
+  result: 'win' | 'draw' | 'loss' | null
+  homeScore: number
+  awayScore: number
+  homeClub: { id: string; name: string; primaryColor: string }
+  awayClub: { id: string; name: string; primaryColor: string }
+  matchday: number
+  motm: { playerId: string; name: string; rating: number; goals: number; assists: number } | null
+  highlights: Array<{
+    minute: number
+    type: string
+    clubId: string | null
+    playerName: string | null
+    secondaryPlayerName: string | null
+  }>
+  playerRatings: Array<{
+    playerId: string
+    clubId: string
+    name: string
+    rating: number
+    minutesPlayed: number
+    goals: number
+    assists: number
+  }>
+  assistantComment: string
+  stats: MatchTeamStats[]
+}
+
+export async function fetchMatchSummary(matchId: string): Promise<MatchSummary> {
+  return apiClient(`/matches/${matchId}/summary`)
+}
+
+export async function fetchPlayerMatchStats(matchId: string): Promise<{ playerStats: any[] }> {
+  return apiClient(`/matches/${matchId}/player-stats`)
+}

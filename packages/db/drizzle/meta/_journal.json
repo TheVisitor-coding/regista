@@ -71,6 +71,20 @@
       "when": 1775220104859,
       "tag": "0009_overjoyed_penance",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1775231154527,
+      "tag": "0010_early_green_goblin",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1775231615615,
+      "tag": "0011_legal_polaris",
+      "breakpoints": true
     }
   ]
 }

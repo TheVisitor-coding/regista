@@ -2,7 +2,7 @@ import { Worker, type Job } from 'bullmq'
 import { bullmqRedis } from '#services/redis'
 import { db } from '@regista/db'
 import { matches, players, clubs, standings } from '@regista/db'
-import { and, eq, gte, lte } from 'drizzle-orm'
+import { and, eq, lte } from 'drizzle-orm'
 import { queueService } from '#services/queue'
 import { MatchEngine } from '../match/match_engine.js'
 import { ProgressionService } from '../match/progression_service.js'
@@ -273,11 +273,10 @@ async function handleScheduler(_job: Job) {
     const now = new Date()
     const soon = new Date(now.getTime() + 15 * 60 * 1000)
 
-    // Find matches starting within 15 minutes that haven't been processed
-    const upcoming = await db.select({ id: matches.id }).from(matches)
+    // Find all scheduled matches whose time has come (past or within next 15 min)
+    const upcoming = await db.select({ id: matches.id, scheduledAt: matches.scheduledAt }).from(matches)
         .where(and(
             eq(matches.status, 'scheduled'),
-            gte(matches.scheduledAt, now),
             lte(matches.scheduledAt, soon),
         ))
 
@@ -287,6 +286,8 @@ async function handleScheduler(_job: Job) {
 
     if (upcoming.length > 0) {
         console.log(`⚽ Scheduler: queued ${upcoming.length} matches for pre-match`)
+    } else {
+        console.log(`⚽ Scheduler: no matches to queue (checked at ${now.toISOString()})`)
     }
 }
 

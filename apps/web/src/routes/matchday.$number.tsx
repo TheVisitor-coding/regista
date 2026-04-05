@@ -9,7 +9,7 @@ import { fetchMatchday } from '~/lib/competition'
 import { Button } from '~/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 
-export const Route = createFileRoute('/competition/matchday/$number')({
+export const Route = createFileRoute('/matchday/$number')({
   component: MatchdayPage,
 })
 

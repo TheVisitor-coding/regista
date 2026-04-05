@@ -26,6 +26,7 @@ const OfferController = () => import('../app/transfers/offer_controller.js')
 const TacticsController = () => import('../app/tactics/tactics_controller.js')
 const ModerationController = () => import('../app/moderation/moderation_controller.js')
 const OnboardingController = () => import('../app/onboarding/onboarding_controller.js')
+const StatsController = () => import('../app/stats/stats_controller.js')
 
 const registerRL = rateLimit({ maxAttempts: 3, windowSeconds: 3600, keyPrefix: 'register' })
 const loginRL = rateLimit({ maxAttempts: 5, windowSeconds: 900, keyPrefix: 'login' })
@@ -94,7 +95,11 @@ router.group(() => {
 // Squad routes (protected)
 router.group(() => {
   router.get('/', [SquadController, 'index'])
+  router.get('/compare', [SquadController, 'compare'])
   router.get('/:playerId', [SquadController, 'show'])
+  router.get('/:playerId/history', [SquadController, 'history'])
+  router.get('/:playerId/valuation', [SquadController, 'valuation'])
+  router.post('/:playerId/extend-contract', [SquadController, 'extendContract'])
 }).prefix('/squad').use(authMiddleware)
 
 // Competition routes (protected)
@@ -102,7 +107,13 @@ router.group(() => {
   router.get('/', [CompetitionController, 'info'])
   router.get('/standings', [CompetitionController, 'standings'])
   router.get('/matchday/:number', [CompetitionController, 'matchday'])
+  router.get('/scorers', [CompetitionController, 'scorers'])
+  router.get('/position-history', [CompetitionController, 'positionHistory'])
+  router.get('/seasons', [CompetitionController, 'seasonHistory'])
 }).prefix('/competition').use(authMiddleware)
+
+// Stats routes (protected)
+router.get('/stats/club', [StatsController, 'clubStats']).use(authMiddleware)
 
 // Match routes (protected)
 router.group(() => {
@@ -111,6 +122,8 @@ router.group(() => {
   router.get('/:matchId/events', [MatchDetailController, 'events'])
   router.get('/:matchId/lineups', [MatchDetailController, 'lineups'])
   router.get('/:matchId/stats', [MatchDetailController, 'stats'])
+  router.get('/:matchId/summary', [MatchDetailController, 'summary'])
+  router.get('/:matchId/player-stats', [MatchDetailController, 'playerStatsDetail'])
   router.post('/:matchId/tactics', [MatchDetailController, 'updateTactics'])
 }).prefix('/matches').use(authMiddleware)
 
@@ -156,6 +169,16 @@ router.post('/squad/:playerId/release', [MarketController, 'releasePlayer']).use
 router.group(() => {
   router.get('/', [TacticsController, 'show'])
   router.put('/', [TacticsController, 'update'])
+  router.get('/presets', [TacticsController, 'listPresets'])
+  router.post('/presets', [TacticsController, 'createPreset'])
+  router.put('/presets/:id', [TacticsController, 'updatePreset'])
+  router.delete('/presets/:id', [TacticsController, 'deletePreset'])
+  router.post('/presets/:id/apply', [TacticsController, 'applyPreset'])
+  router.post('/auto-lineup', [TacticsController, 'autoLineup'])
+  router.get('/composition', [TacticsController, 'getComposition'])
+  router.put('/composition', [TacticsController, 'saveComposition'])
+  router.patch('/auto-adjustment', [TacticsController, 'toggleAutoAdjustment'])
+  router.get('/analysis/:matchId', [TacticsController, 'analysis'])
 }).prefix('/tactics').use(authMiddleware)
 
 // Moderation routes
