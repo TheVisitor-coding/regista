@@ -18,7 +18,10 @@ export default defineConfig({
   preloads: [
     () => import('#start/routes'),
     () => import('#start/kernel'),
-    () => import('#start/infra'),
+    {
+      file: () => import('#start/infra'),
+      environment: ['web'],
+    },
     {
       file: () => import('#start/ws'),
       environment: ['web'],
@@ -35,6 +38,24 @@ export default defineConfig({
       reloadServer: false,
     },
   ],
+
+  tests: {
+    suites: [
+      {
+        name: 'unit',
+        files: ['tests/unit/**/*.spec.ts'],
+      },
+      {
+        name: 'functional',
+        files: ['tests/functional/**/*.spec.ts'],
+      },
+      {
+        name: 'integration',
+        files: ['tests/integration/**/*.spec.ts'],
+      },
+    ],
+    timeout: 30_000,
+  },
 
   directories: {
     controllers: 'app/controllers',

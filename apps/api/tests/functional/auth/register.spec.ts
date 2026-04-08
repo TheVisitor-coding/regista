@@ -2,9 +2,11 @@ import { test } from '@japa/runner'
 import { db } from '@regista/db'
 import { users, emailVerificationTokens } from '@regista/db'
 import { sql } from 'drizzle-orm'
+import { redis } from '#services/redis'
 
 test.group('Auth - Register', (group) => {
   group.each.setup(async () => {
+    await redis.flushdb()
     await db.delete(emailVerificationTokens)
     await db.delete(users)
   })

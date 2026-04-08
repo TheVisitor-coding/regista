@@ -81,6 +81,9 @@ importers:
       '@types/node':
         specifier: ^22
         version: 22.19.13
+      dotenv:
+        specifier: ^17.4.0
+        version: 17.4.0
       hot-hook:
         specifier: ^0.4
         version: 0.4.0
@@ -90,6 +93,9 @@ importers:
       ts-node-maintained:
         specifier: ^10
         version: 10.9.6(@swc/core@1.15.18)(@types/node@22.19.13)(typescript@5.9.3)
+      tsx:
+        specifier: ^4.20
+        version: 4.21.0
       typescript:
         specifier: ^5.7
         version: 5.9.3

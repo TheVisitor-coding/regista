@@ -2,6 +2,16 @@ import { db } from '@regista/db'
 import { matchLineups, matchTacticalChanges } from '@regista/db'
 import type { TacticConfig } from '@regista/shared'
 
+// Formation positions (RM, LM) that aren't valid DB player positions
+const POSITION_DB_MAP: Record<string, string> = {
+    RM: 'RW',
+    LM: 'LW',
+}
+
+function toDbPosition(pos: string): string {
+    return POSITION_DB_MAP[pos] ?? pos
+}
+
 export class LineupService {
     static async saveLineup(
         matchId: string,
@@ -14,7 +24,7 @@ export class LineupService {
                 matchId,
                 clubId,
                 playerId: p.playerId,
-                position: p.position as any,
+                position: toDbPosition(p.position) as any,
                 isStarter: true,
                 minuteIn: 0,
             })),
@@ -22,7 +32,7 @@ export class LineupService {
                 matchId,
                 clubId,
                 playerId: p.playerId,
-                position: p.position as any,
+                position: toDbPosition(p.position) as any,
                 isStarter: false,
                 minuteIn: 0,
             })),

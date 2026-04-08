@@ -2,6 +2,7 @@ import { test } from '@japa/runner'
 import { db } from '@regista/db'
 import { users, emailVerificationTokens, refreshTokens } from '@regista/db'
 import { hashPassword } from '../../../app/auth/auth_service.js'
+import { redis } from '#services/redis'
 
 async function createVerifiedUser(username = 'testuser', email = 'test@example.com') {
   const passwordHash = await hashPassword('Password1')
@@ -17,6 +18,7 @@ async function createVerifiedUser(username = 'testuser', email = 'test@example.c
 
 test.group('Auth - Login', (group) => {
   group.each.setup(async () => {
+    await redis.flushdb()
     await db.delete(refreshTokens)
     await db.delete(emailVerificationTokens)
     await db.delete(users)

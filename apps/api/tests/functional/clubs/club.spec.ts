@@ -7,6 +7,7 @@ import {
     notifications,
     financialTransactions,
 } from '@regista/db'
+import { eq } from 'drizzle-orm'
 import { hashPassword, generateAccessToken } from '../../../app/auth/auth_service.js'
 
 async function createActiveUser(username = 'clubowner', email = 'clubowner@example.com') {
@@ -62,10 +63,10 @@ test.group('Clubs', (group) => {
             },
         })
 
-        const [club] = await db.select().from(clubs)
+        const [club] = await db.select().from(clubs).where(eq(clubs.userId, user.id))
         assert.exists(club)
 
-        const staff = await db.select().from(clubStaff)
+        const staff = await db.select().from(clubStaff).where(eq(clubStaff.clubId, club.id))
         assert.equal(staff.length, 4)
     })
 

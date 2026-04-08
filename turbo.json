@@ -31,6 +31,15 @@
     "db:seed": {
       "cache": false
     },
+    "seed": {
+      "cache": false
+    },
+    "seed:minimal": {
+      "cache": false
+    },
+    "seed:advance": {
+      "cache": false
+    },
     "clean": {
       "cache": false
     }

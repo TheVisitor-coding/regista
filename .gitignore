@@ -51,3 +51,4 @@ docker/data/
 .agent/
 .agents/
 .claude/skills/
+.gitnexus

@@ -9,10 +9,11 @@
 - **Vault miroir** : ~/Personal_Vault/02 - Projects/regista/Session-Logs/
 
 ## État actuel
-- **Phase** : MVP Gameplay implémenté (Phases 2-11) — En test local
+- **Phase** : MVP Gameplay implémenté (Phases 2-11) — Phase 0 Sauvetage en cours (6/7 specs P0 complétées)
 - **Branche principale** : main
 - **Implémenté** : Auth, Club+Squad, Dashboard, Notifications, Finances, Competition (leagues/divisions/standings/calendar), AI Clubs (59/league), Match Engine (simulation minute par minute), Game Loop (post-match pipeline, season lifecycle), Training, Progression, Transfers, Tactics, Stats
-- **Non implémenté** : Modération (SPEC-13), Polish (SPEC-14), Seed data, Tests E2E
+- **Non implémenté** : Modération (SPEC-13), Polish (SPEC-14), Seed data
+- **Tests** : 89/89 passent (unit: 62, functional: 26, integration: 1) — 13s
 
 ## Décisions techniques
 <!-- /mem ajoute ici — chaque entrée préfixée par [YYYY-MM-DD] -->
@@ -37,6 +38,8 @@
 - [2026-03-03] Modération : aucun blocage automatique de compte — toutes les alertes remontent à un admin humain (évite faux positifs, scoring ML = post-MVP)
 - [2026-03-03] Modération : validation noms = unicité exacte case-insensitive + blacklist Redis (~500 termes seedés). Pas de Levenshtein au MVP.
 - [2026-03-03] Cosmétiques (Lot 2) : table `premium_transactions` créée mais vide — paiement réel (Stripe) est Lot 3. Uniquement G$ au lancement.
+- [2026-04-07] Tests : Redis connecté dans bootstrap.ts (setup) et flushé entre chaque test fonctionnel (redis.flushdb dans group.each.setup). 3 suites Japa : unit, functional, integration. Ne jamais appeler redis.connect/quit dans les tests individuels.
+- [2026-04-07] Tests : .env.test a EMAIL_VERIFICATION_REQUIRED=true pour tester le flow complet avec vérification email. Queries de test sur club_staff/clubs doivent filtrer par clubId/userId (la table contient les 59 AI clubs).
 
 ## Bugs connus / Points d'attention
 <!-- /mem ajoute ici -->
@@ -46,6 +49,7 @@
 - [2026-04-03] userId nullable sur la table clubs (nécessaire pour les clubs IA)
 - [2026-04-03] Création de league (~59 clubs + 1140 matchs) = ~30-60s — pas de loading indicator adapté sur le frontend onboarding
 - [2026-04-03] drizzle.config.ts utilise dotenv pour charger DATABASE_URL depuis le .env racine (devDependency dans packages/db)
+- [2026-04-07] .env.test utilise Redis DB 0 (même que dev) — `redis.flushdb()` en test efface les données dev Redis. Envisager DB 1 pour les tests.
 
 ## Conventions de code
 - TypeScript strict everywhere
@@ -56,6 +60,8 @@
 - Alias `~/` → `./src/` (api et web)
 - Commits conventionnels : feat:, fix:, docs:, refactor:, test:
 - Specs-driven : toute feature doit avoir une spec dans `docs/specs/` avant implémentation
+- Tests fonctionnels : chaque `group.each.setup` doit appeler `redis.flushdb()` + cleanup DB des tables utilisées
+- Logique testable : extraire les fonctions pures du controller (ex: `buildMarketFilters`) pour permettre les tests unitaires sans HTTP/auth
 
 ## Historique récent
 <!-- /mem ajoute ici — archivage auto après 30 jours -->
@@ -63,3 +69,4 @@
 - [2026-03-06] Session #2 : Mise à jour stack technique + config Docker (Node 22, Japa, docker-compose.dev.yml, scripts docker:*)
 - [2026-03-06] Session #3 : Implémentation SPEC-01 Auth (backend + frontend, ~30 fichiers)
 - [2026-04-03] Session #4 : Implémentation Phases 2-11 (~140 fichiers, 8 migrations). MVP gameplay complet. Fix bugs testabilité (auth, env, CORS, qs config).
+- [2026-04-07] Session #5 : SPEC-P0-06 (filtres marché), SPEC-P0-07 (tests critiques match engine + finances + integration). Fix 15 tests fonctionnels (Redis bootstrap, rate limiters, email verification, club staff query). 89/89 tests passent. Workflow testing formalisé dans CLAUDE.md.

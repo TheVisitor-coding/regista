@@ -1,7 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { db } from '@regista/db'
 import { clubs, players, transferListings, freeAgents } from '@regista/db'
-import { and, count, desc, eq } from 'drizzle-orm'
+import { and, asc, count, desc, eq, gte, lte, type SQL } from 'drizzle-orm'
 import { sellPlayerValidator, marketQueryValidator } from './transfer_validator.js'
 import { MarketService } from './market_service.js'
 import { FreeAgentService } from './free_agent_service.js'
@@ -11,6 +11,65 @@ async function getClubId(userId: string): Promise<string | null> {
     return club?.id ?? null
 }
 
+export interface MarketQueryParams {
+    page?: number
+    limit?: number
+    position?: string
+    overallMin?: number
+    overallMax?: number
+    ageMin?: number
+    ageMax?: number
+    priceMin?: number
+    priceMax?: number
+    source?: string
+    sortBy?: string
+    sortOrder?: string
+}
+
+export function buildMarketFilters(params: MarketQueryParams): SQL[] {
+    const conditions: SQL[] = [eq(transferListings.status, 'active')]
+
+    if (params.source) {
+        conditions.push(eq(transferListings.source, params.source as any))
+    }
+    if (params.position) {
+        conditions.push(eq(players.position, params.position))
+    }
+    if (params.overallMin != null) {
+        conditions.push(gte(players.overall, params.overallMin))
+    }
+    if (params.overallMax != null) {
+        conditions.push(lte(players.overall, params.overallMax))
+    }
+    if (params.ageMin != null) {
+        conditions.push(gte(players.age, params.ageMin))
+    }
+    if (params.ageMax != null) {
+        conditions.push(lte(players.age, params.ageMax))
+    }
+    if (params.priceMin != null) {
+        conditions.push(gte(transferListings.price, params.priceMin))
+    }
+    if (params.priceMax != null) {
+        conditions.push(lte(transferListings.price, params.priceMax))
+    }
+
+    return conditions
+}
+
+const sortColumnMap = {
+    overall: players.overall,
+    price: transferListings.price,
+    age: players.age,
+    potential: players.potential,
+    recent: transferListings.createdAt,
+} as const
+
+export function buildMarketSort(params: MarketQueryParams) {
+    const sortColumn = sortColumnMap[params.sortBy as keyof typeof sortColumnMap] ?? transferListings.createdAt
+    return params.sortOrder === 'asc' ? asc(sortColumn) : desc(sortColumn)
+}
+
 export default class MarketController {
     async index({ request, response }: HttpContext) {
         const params = await marketQueryValidator.validate(request.qs())
@@ -18,11 +77,8 @@ export default class MarketController {
         const limit = params.limit ?? 20
         const offset = (page - 1) * limit
 
-        const conditions = [eq(transferListings.status, 'active')]
-
-        if (params.source) {
-            conditions.push(eq(transferListings.source, params.source as any))
-        }
+        const conditions = buildMarketFilters(params)
+        const sortDir = buildMarketSort(params)
 
         // Get listings with player data
         const listings = await db
@@ -41,13 +97,14 @@ export default class MarketController {
             .from(transferListings)
             .innerJoin(players, eq(transferListings.playerId, players.id))
             .where(and(...conditions))
-            .orderBy(desc(transferListings.createdAt))
+            .orderBy(sortDir)
             .limit(limit)
             .offset(offset)
 
         const [totalResult] = await db
             .select({ value: count(transferListings.id) })
             .from(transferListings)
+            .innerJoin(players, eq(transferListings.playerId, players.id))
             .where(and(...conditions))
 
         return response.ok({

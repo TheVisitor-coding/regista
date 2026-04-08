@@ -1,0 +1,3 @@
+ALTER TABLE "clubs" ADD CONSTRAINT "clubs_league_id_leagues_id_fk" FOREIGN KEY ("league_id") REFERENCES "public"."leagues"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "clubs" ADD CONSTRAINT "clubs_division_id_divisions_id_fk" FOREIGN KEY ("division_id") REFERENCES "public"."divisions"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "clubs_division_id_idx" ON "clubs" USING btree ("division_id");

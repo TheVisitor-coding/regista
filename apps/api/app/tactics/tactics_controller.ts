@@ -1,9 +1,8 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { db } from '@regista/db'
-import { clubs, tacticalPresets, players, matches } from '@regista/db'
+import { clubs, tacticalPresets, clubTactics, clubCompositions, players, matches } from '@regista/db'
 import { and, asc, count, desc, eq, inArray, or } from 'drizzle-orm'
 import vine from '@vinejs/vine'
-import { redis } from '#services/redis'
 import { AutoLineupService } from '../match/auto_lineup_service.js'
 import { FORMATIONS } from '@regista/shared'
 
@@ -110,21 +109,42 @@ export default class TacticsController {
         const clubId = await getClubId(auth.userId)
         if (!clubId) return response.notFound({ error: 'CLUB_NOT_FOUND' })
 
-        const cached = await redis.get(`tactics:${clubId}`)
-        if (cached) return response.ok(JSON.parse(cached))
-        return response.ok(DEFAULT_TACTICS)
+        const [row] = await db.select({
+            formation: clubTactics.formation,
+            mentality: clubTactics.mentality,
+            pressing: clubTactics.pressing,
+            passingStyle: clubTactics.passingStyle,
+            width: clubTactics.width,
+            tempo: clubTactics.tempo,
+            defensiveLine: clubTactics.defensiveLine,
+        }).from(clubTactics).where(eq(clubTactics.clubId, clubId)).limit(1)
+
+        return response.ok(row ?? DEFAULT_TACTICS)
     }
 
     async update({ auth, request, response }: HttpContext) {
         const clubId = await getClubId(auth.userId)
         if (!clubId) return response.notFound({ error: 'CLUB_NOT_FOUND' })
 
-        const data = await updateTacticsValidator.validate(request.all())
-        const cachedStr = await redis.get(`tactics:${clubId}`)
-        const current = cachedStr ? JSON.parse(cachedStr) : { ...DEFAULT_TACTICS }
-        const merged = { ...current, ...data }
-        await redis.set(`tactics:${clubId}`, JSON.stringify(merged))
-        return response.ok(merged)
+        const data = await updateTacticsValidator.validate(request.all()) as Record<string, any>
+
+        const [upserted] = await db.insert(clubTactics)
+            .values({ clubId, ...data })
+            .onConflictDoUpdate({
+                target: clubTactics.clubId,
+                set: { ...data, updatedAt: new Date() },
+            })
+            .returning({
+                formation: clubTactics.formation,
+                mentality: clubTactics.mentality,
+                pressing: clubTactics.pressing,
+                passingStyle: clubTactics.passingStyle,
+                width: clubTactics.width,
+                tempo: clubTactics.tempo,
+                defensiveLine: clubTactics.defensiveLine,
+            })
+
+        return response.ok(upserted)
     }
 
     // === Presets ===
@@ -217,7 +237,7 @@ export default class TacticsController {
             .limit(1)
         if (!preset) return response.notFound({ error: 'PRESET_NOT_FOUND' })
 
-        // Apply tactics to Redis
+        // Apply tactics to PostgreSQL
         const tactics = {
             formation: preset.formation,
             mentality: preset.mentality,
@@ -227,7 +247,12 @@ export default class TacticsController {
             tempo: preset.tempo,
             defensiveLine: preset.defensiveLine,
         }
-        await redis.set(`tactics:${clubId}`, JSON.stringify(tactics))
+        await db.insert(clubTactics)
+            .values({ clubId, ...tactics })
+            .onConflictDoUpdate({
+                target: clubTactics.clubId,
+                set: { ...tactics, updatedAt: new Date() },
+            })
 
         // Auto-lineup with new formation
         const eligible = await AutoLineupService.getEligiblePlayers(clubId)
@@ -324,12 +349,62 @@ export default class TacticsController {
         const clubId = await getClubId(auth.userId)
         if (!clubId) return response.notFound({ error: 'CLUB_NOT_FOUND' })
 
-        const cached = await redis.get(`composition:${clubId}`)
-        if (cached) return response.ok(JSON.parse(cached))
+        const [saved] = await db.select().from(clubCompositions)
+            .where(eq(clubCompositions.clubId, clubId)).limit(1)
+        if (saved) {
+            // Enrich saved composition with player data
+            const allPlayerIds = [
+                ...saved.startingXI.map((p) => p.playerId),
+                ...saved.bench.map((p) => p.playerId),
+            ]
+            const playerRows = allPlayerIds.length > 0
+                ? await db.select({
+                    id: players.id, firstName: players.firstName, lastName: players.lastName,
+                    position: players.position, overall: players.overall, fatigue: players.fatigue,
+                }).from(players).where(inArray(players.id, allPlayerIds))
+                : []
+            const playerMap = new Map(playerRows.map((p) => [p.id, p]))
+
+            const enrichedXI = saved.startingXI.map((slot) => {
+                const p = playerMap.get(slot.playerId)
+                return {
+                    ...slot,
+                    playerName: p ? `${p.firstName} ${p.lastName}` : 'Unknown',
+                    naturalPosition: p?.position ?? slot.position,
+                    overall: p?.overall ?? 50,
+                    fatigue: p?.fatigue ?? 0,
+                    compatibility: p?.position === slot.position ? 1.0 : 0.7,
+                }
+            })
+            const enrichedBench = saved.bench.map((slot) => {
+                const p = playerMap.get(slot.playerId)
+                return {
+                    ...slot,
+                    playerName: p ? `${p.firstName} ${p.lastName}` : 'Unknown',
+                    naturalPosition: p?.position ?? slot.position,
+                    overall: p?.overall ?? 50,
+                    fatigue: p?.fatigue ?? 0,
+                }
+            })
+
+            return response.ok({
+                formation: saved.formation,
+                startingXI: enrichedXI,
+                bench: enrichedBench,
+                captainId: saved.captainId,
+                penaltyTakerId: saved.penaltyTakerId,
+                freeKickTakerId: saved.freeKickTakerId,
+                cornerLeftTakerId: saved.cornerLeftTakerId,
+                cornerRightTakerId: saved.cornerRightTakerId,
+                coherence: saved.coherence,
+                warnings: saved.warnings,
+            })
+        }
 
         // No saved composition — generate auto-lineup with enriched data
-        const cachedTactics = await redis.get(`tactics:${clubId}`)
-        const formation = cachedTactics ? JSON.parse(cachedTactics).formation : '4-4-2'
+        const [tacticsRow] = await db.select({ formation: clubTactics.formation })
+            .from(clubTactics).where(eq(clubTactics.clubId, clubId)).limit(1)
+        const formation = tacticsRow?.formation ?? '4-4-2'
 
         const eligible = await AutoLineupService.getEligiblePlayers(clubId)
         const xi = AutoLineupService.selectStartingXI(eligible, formation)
@@ -400,12 +475,37 @@ export default class TacticsController {
         if (!data.bench.find((b) => b.position === 'GK')) warnings.push('No backup GK on bench')
         const coherence = calculateCoherence(xiWithData, data.bench, warnings)
 
-        // Save to Redis
-        await redis.set(`composition:${clubId}`, JSON.stringify({
-            ...data,
-            coherence,
-            warnings,
-        }))
+        // Save to PostgreSQL
+        await db.insert(clubCompositions)
+            .values({
+                clubId,
+                formation: data.formation,
+                startingXI: data.startingXI,
+                bench: data.bench,
+                captainId: data.captainId ?? null,
+                penaltyTakerId: data.penaltyTakerId ?? null,
+                freeKickTakerId: data.freeKickTakerId ?? null,
+                cornerLeftTakerId: data.cornerLeftTakerId ?? null,
+                cornerRightTakerId: data.cornerRightTakerId ?? null,
+                coherence,
+                warnings,
+            })
+            .onConflictDoUpdate({
+                target: clubCompositions.clubId,
+                set: {
+                    formation: data.formation,
+                    startingXI: data.startingXI,
+                    bench: data.bench,
+                    captainId: data.captainId ?? null,
+                    penaltyTakerId: data.penaltyTakerId ?? null,
+                    freeKickTakerId: data.freeKickTakerId ?? null,
+                    cornerLeftTakerId: data.cornerLeftTakerId ?? null,
+                    cornerRightTakerId: data.cornerRightTakerId ?? null,
+                    coherence,
+                    warnings,
+                    updatedAt: new Date(),
+                },
+            })
 
         return response.ok({ coherence, warnings })
     }

@@ -13,6 +13,7 @@ import {
 } from 'drizzle-orm/pg-core'
 import { sql } from 'drizzle-orm'
 import { users } from './users.js'
+import { leagues, divisions } from './competition.js'
 
 export const aiProfileEnum = pgEnum('ai_profile', [
     'offensive',
@@ -67,8 +68,8 @@ export const clubs = pgTable(
         stadiumName: varchar('stadium_name', { length: 50 }).notNull(),
         balance: bigint('balance', { mode: 'number' }).notNull(),
         morale: integer('morale').notNull().default(60),
-        leagueId: uuid('league_id'),
-        divisionId: uuid('division_id'),
+        leagueId: uuid('league_id').references(() => leagues.id),
+        divisionId: uuid('division_id').references(() => divisions.id),
         isAi: boolean('is_ai').notNull().default(false),
         aiProfile: aiProfileEnum('ai_profile'),
         autoAdjustment: boolean('auto_adjustment').notNull().default(true),
@@ -80,6 +81,7 @@ export const clubs = pgTable(
         uniqueIndex('clubs_user_id_idx').on(table.userId),
         uniqueIndex('clubs_name_lower_idx').on(sql`lower(${table.name})`),
         index('clubs_league_id_idx').on(table.leagueId),
+        index('clubs_division_id_idx').on(table.divisionId),
     ],
 )
 
